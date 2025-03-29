@@ -9,16 +9,16 @@ import { modelID, models } from "@/lib/models";
 import { Footnote } from "./footnote";
 import {
   ArrowUpIcon,
-  CheckedSquare,
   ChevronDownIcon,
   StopIcon,
-  UncheckedSquare,
 } from "./icons";
+import { LightBulbIcon } from '@heroicons/react/24/outline'
 import { Input } from "./input";
+
 
 export function Chat() {
   const [input, setInput] = useState<string>("");
-  const [selectedModelId, setSelectedModelId] = useState<modelID>("sonnet-3.7");
+  const [selectedModelId, setSelectedModelId] = useState<modelID>("deepseek-r1");
   const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true);
 
   const { messages, append, status, stop } = useChat({
@@ -54,7 +54,7 @@ export function Chat() {
       )}
 
       <div className="flex flex-col gap-4 w-full">
-        <div className="w-full relative p-3 dark:bg-zinc-800 rounded-2xl flex flex-col gap-1 bg-zinc-100">
+        <div className="w-full relative p-3 dark:bg-zinc-800 shadow-sm rounded-2xl flex flex-col gap-1 bg-zinc-100 border-zinc-200/60 border-[1px] dark:border-zinc-700">
           <Input
             input={input}
             setInput={setInput}
@@ -65,18 +65,18 @@ export function Chat() {
 
           <div className="absolute bottom-2.5 left-2.5">
             <button
-              disabled={selectedModelId !== "sonnet-3.7"}
+              // disabled={selectedModelId !== "sonnet-3.7"}
               className={cn(
-                "relative w-fit text-sm p-1.5 rounded-lg flex flex-row items-center gap-2 dark:hover:bg-zinc-600 hover:bg-zinc-200 cursor-pointer disabled:opacity-50",
+                "relative w-fit p-2 text-xs transition-colors rounded-full flex flex-row items-center gap-2  cursor-pointer disabled:opacity-50",
                 {
-                  "dark:bg-zinc-600 bg-zinc-200": isReasoningEnabled,
+                  "text-blue-500 dark:text-blue-600": isReasoningEnabled,
                 },
               )}
               onClick={() => {
                 setIsReasoningEnabled(!isReasoningEnabled);
               }}
             >
-              {isReasoningEnabled ? <CheckedSquare /> : <UncheckedSquare />}
+              <LightBulbIcon className={cn("h-4 w-4")} />
               <div>Reasoning</div>
             </button>
           </div>
@@ -86,7 +86,7 @@ export function Chat() {
               {/* <div>
                 {selectedModel ? selectedModel.name : "Models Unavailable!"}
               </div> */}
-              <div className="flex justify-center items-center text-zinc-500 dark:text-zinc-400 px-1">
+              <div className="flex justify-center items-center text-xs text-zinc-500 dark:text-zinc-400 px-1">
                 <span className="pr-1">{models[selectedModelId]}</span>
                 <ChevronDownIcon />
               </div>
@@ -111,7 +111,7 @@ export function Chat() {
 
             <button
               className={cn(
-                "size-8 flex flex-row justify-center items-center dark:bg-zinc-100 bg-zinc-900 dark:text-zinc-900 text-zinc-100 p-1.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-300 hover:scale-105 active:scale-95 transition-all",
+                "size-6 flex mt-0.5 flex-row justify-center items-center dark:bg-zinc-100 bg-zinc-900 dark:text-zinc-900 text-zinc-100 p-1.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-300 hover:scale-105 active:scale-95 transition-all",
                 {
                   "dark:bg-zinc-200 dark:text-zinc-500":
                     isGeneratingResponse || input === "",

@@ -5,9 +5,10 @@ import Markdown from "react-markdown";
 import { markdownComponents } from "./markdown-components";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon, SpinnerIcon } from "./icons";
+import { ChevronDownIcon, ChevronUpIcon } from "./icons";
 import { UIMessage } from "ai";
 import { UseChatHelpers } from "@ai-sdk/react";
+import ShinyText from "./shiny-text";
 
 interface ReasoningPart {
   type: "reasoning";
@@ -51,28 +52,15 @@ export function ReasoningMessagePart({
     <div className="flex flex-col">
       {isReasoning ? (
         <div className="flex flex-row gap-2 items-center">
-          <div className="font-medium text-sm">Reasoning</div>
-          <div className="animate-spin">
-            <SpinnerIcon />
-          </div>
+          <ShinyText text="Reasoning" disabled={false} speed={2} className='font-normal text-sm' />
         </div>
       ) : (
-        <div className="flex flex-row gap-2 items-center">
-          <div className="font-medium text-sm">Reasoned for a few seconds</div>
-          <button
-            className={cn(
-              "cursor-pointer rounded-full dark:hover:bg-zinc-800 hover:bg-zinc-200",
-              {
-                "dark:bg-zinc-800 bg-zinc-200": isExpanded,
-              },
-            )}
-            onClick={() => {
-              setIsExpanded(!isExpanded);
-            }}
-          >
-            {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
-          </button>
-        </div>
+        <button  onClick={() => {
+          setIsExpanded(!isExpanded);
+        }} className="flex flex-row gap-2 items-center cursor-pointer">
+          <p  className='font-normal text-sm dark:text-[#b5b5b5a4] text-[#54545494]'>Reasoned for a few seconds</p>
+          {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
+        </button>
       )}
 
       <AnimatePresence initial={false}>
@@ -110,9 +98,7 @@ interface TextMessagePartProps {
 
 export function TextMessagePart({ text }: TextMessagePartProps) {
   return (
-    <div className="flex flex-col gap-4">
       <Markdown components={markdownComponents}>{text}</Markdown>
-    </div>
   );
 }
 
@@ -133,7 +119,7 @@ export function Messages({ messages, status }: MessagesProps) {
 
   return (
     <div
-      className="flex flex-col gap-8 overflow-y-scroll items-center w-full"
+      className="flex flex-col gap-4 overflow-y-scroll items-center w-full"
       ref={messagesRef}
     >
       {messages.map((message) => (
@@ -145,18 +131,26 @@ export function Messages({ messages, status }: MessagesProps) {
         >
           <div
             className={cn("flex flex-col gap-4", {
-              "dark:bg-zinc-800 bg-zinc-200 p-2 rounded-xl w-fit ml-auto":
+              "dark:bg-zinc-800 bg-zinc-100 px-2 py-1 rounded-lg w-fit ml-auto":
                 message.role === "user",
               "": message.role === "assistant",
             })}
           >
             {message.parts.map((part, partIndex) => {
-              if (part.type === "text") {
+              if (part.type === "text" && message.role !== "user") {
                 return (
                   <TextMessagePart
-                    key={`${message.id}-${partIndex}`}
+                    key={`${message.id}-${partIndex}`} // 确保唯一 key
                     text={part.text}
                   />
+                );
+              }
+
+              if (part.type === "text" && message.role == "user") {
+                return (
+                  <div key={`${message.id}-${partIndex}`} className="flex flex-col gap-4 text-sm">
+                    {part.text}
+                  </div>
                 );
               }
 
@@ -179,7 +173,7 @@ export function Messages({ messages, status }: MessagesProps) {
       ))}
 
       {status === "submitted" && (
-        <div className="text-zinc-500 mb-12 w-full">Hmm...</div>
+         <ShinyText text="Connecting..." disabled={false} speed={2} className='font-normal text-sm w-full mb-12' />
       )}
     </div>
   );

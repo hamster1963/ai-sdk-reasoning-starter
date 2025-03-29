@@ -31,7 +31,7 @@ export function Input({
 
   return (
     <textarea
-      className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent placeholder:text-zinc-400"
+      className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent mx-2 my-1 placeholder:text-zinc-300"
       placeholder="Send a message"
       value={input}
       autoFocus

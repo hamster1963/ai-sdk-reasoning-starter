@@ -2,7 +2,7 @@ import { Components } from "react-markdown";
 import Link from "next/link";
 
 export const markdownComponents: Partial<Components> = {
-  p: ({ children }) => <p className="leading-6">{children}</p>,
+  p: ({ children }) => <p className="leading-6 text-sm">{children}</p>,
   pre: ({ children }) => <>{children}</>,
   ol: ({ children, ...props }) => {
     return (

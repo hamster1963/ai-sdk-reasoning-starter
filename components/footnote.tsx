@@ -19,15 +19,6 @@ export function Footnote() {
       >
         AI SDK
       </Link>
-      . Read more about how to use reasoning models in your applications in our{' '}
-      <Link
-        className="underline underline-offset-2"
-        href="https://sdk.vercel.ai/docs/ai-sdk-ui/chatbot#reasoning"
-        target="_blank"
-      >
-        documentation
-      </Link>
-      .
     </div>
   );
 }
