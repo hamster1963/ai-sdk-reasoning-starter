@@ -1,6 +1,6 @@
 'use client'
 
-import { type modelID, models } from '@/lib/models'
+import { DefaultModelID, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
 import { LightBulbIcon } from '@heroicons/react/24/outline'
 import cn from 'classnames'
@@ -14,7 +14,7 @@ import { Messages } from './messages'
 export function Chat() {
   const [input, setInput] = useState<string>('')
   const [selectedModelId, setSelectedModelId] =
-    useState<modelID>('deepSeek-r1-7B')
+    useState<modelID>(DefaultModelID)
   const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
 
   const { messages, append, status, stop } = useChat({
@@ -65,7 +65,7 @@ export function Chat() {
 
           <div className="absolute bottom-2.5 left-2.5">
             <button
-              disabled={selectedModelId === 'deepSeek-r1-7B'}
+              disabled={!selectedModelId.includes('deepseek-r1')}
               type="button"
               className={cn(
                 'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
@@ -84,9 +84,6 @@ export function Chat() {
 
           <div className="absolute right-2.5 bottom-2.5 flex flex-row gap-2">
             <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700">
-              {/* <div>
-                {selectedModel ? selectedModel.name : "Models Unavailable!"}
-              </div> */}
               <div className="flex items-center justify-center px-1 text-xs text-zinc-500 dark:text-zinc-400">
                 <span className="pr-1">{models[selectedModelId]}</span>
                 <ChevronDownIcon />
@@ -96,7 +93,9 @@ export function Chat() {
                 className="absolute left-0 w-full cursor-pointer p-1 opacity-0"
                 value={selectedModelId}
                 onChange={(event) => {
-                  if (event.target.value !== 'sonnet-3.7') {
+                  if (!event.target.value.includes('deepseek-r1')) {
+                    setIsReasoningEnabled(false)
+                  } else {
                     setIsReasoningEnabled(true)
                   }
                   setSelectedModelId(event.target.value as modelID)
