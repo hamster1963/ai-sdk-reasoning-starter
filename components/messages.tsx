@@ -145,7 +145,7 @@ export function Messages({ messages, status }: MessagesProps) {
           >
             <div
               className={cn('flex flex-col gap-2', {
-                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-800':
+                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
                   message.role === 'user',
                 '': message.role === 'assistant',
               })}
