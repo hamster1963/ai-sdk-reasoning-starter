@@ -17,7 +17,7 @@ export default function UserMessages() {
       ) : (
         <div className="flex w-full flex-col gap-0.5 text-xl sm:text-2xl">
           <div className="flex flex-row items-center gap-2">
-            <div>Welcome to the AI SDK Preview.</div>
+            <div>Welcome👋</div>
           </div>
           <div className="text-neutral-400 dark:text-neutral-500">
             What would you like me to think about today?
