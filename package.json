@@ -6,6 +6,7 @@
     "dev": "next dev -p 4001",
     "build": "next build",
     "start": "next start",
+    "check:fix": "biome check --fix --unsafe",
     "lint": "next lint"
   },
   "dependencies": {
@@ -15,6 +16,7 @@
     "@ai-sdk/fireworks": "^0.1.18",
     "@ai-sdk/groq": "^1.2.1",
     "@ai-sdk/react": "^1.2.3",
+    "@biomejs/biome": "^1.9.4",
     "@heroicons/react": "^2.2.0",
     "@openrouter/ai-sdk-provider": "^0.4.5",
     "ai": "^4.2.8",

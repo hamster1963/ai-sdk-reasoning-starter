@@ -1,14 +1,14 @@
-"use client";
+'use client'
 
-import { useChat } from "@ai-sdk/react";
-import { toast } from "sonner";
+import { useChat } from '@ai-sdk/react'
+import { toast } from 'sonner'
 
 interface InputProps {
-  input: string;
-  setInput: (value: string) => void;
-  selectedModelId: string;
-  isGeneratingResponse: boolean;
-  isReasoningEnabled: boolean;
+  input: string
+  setInput: (value: string) => void
+  selectedModelId: string
+  isGeneratingResponse: boolean
+  isReasoningEnabled: boolean
 }
 
 export function Input({
@@ -19,48 +19,47 @@ export function Input({
   isReasoningEnabled,
 }: InputProps) {
   const { append } = useChat({
-    id: "primary",
+    id: 'primary',
     body: {
       selectedModelId,
       isReasoningEnabled,
     },
     onError: () => {
-      toast.error("An error occurred, please try again!");
+      toast.error('An error occurred, please try again!')
     },
-  });
+  })
 
   return (
     <textarea
-      className="mb-12 resize-none w-full min-h-12 outline-none bg-transparent mx-2 my-1 placeholder:text-zinc-300"
+      className="mx-2 my-1 mb-12 min-h-12 w-full resize-none bg-transparent outline-none placeholder:text-zinc-300"
       placeholder="Send a message"
       value={input}
-      autoFocus
       onChange={(event) => {
-        setInput(event.currentTarget.value);
+        setInput(event.currentTarget.value)
       }}
       onKeyDown={(event) => {
-        if (event.key === "Enter" && !event.shiftKey) {
-          event.preventDefault();
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault()
 
-          if (input === "") {
-            return;
+          if (input === '') {
+            return
           }
 
           if (isGeneratingResponse) {
-            toast.error("Please wait for the model to finish its response!");
+            toast.error('Please wait for the model to finish its response!')
 
-            return;
+            return
           }
 
           append({
-            role: "user",
+            role: 'user',
             content: input,
             createdAt: new Date(),
-          });
+          })
 
-          setInput("");
+          setInput('')
         }
       }}
     />
-  );
+  )
 }

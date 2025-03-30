@@ -1,8 +1,8 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 export function Footnote() {
   return (
-    <div className="text-xs text-zinc-400 leading-5 hidden sm:block">
+    <div className="hidden text-xs text-zinc-400 leading-5 sm:block">
       This preview is built using{' '}
       <Link
         className="underline underline-offset-2"
@@ -20,5 +20,5 @@ export function Footnote() {
         AI SDK
       </Link>
     </div>
-  );
+  )
 }

@@ -1,31 +1,31 @@
-"use client";
+'use client'
 
-import cn from "classnames";
-import Markdown from "react-markdown";
-import { markdownComponents } from "./markdown-components";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDownIcon, ChevronUpIcon } from "./icons";
-import { UIMessage } from "ai";
-import { UseChatHelpers } from "@ai-sdk/react";
-import ShinyText from "./shiny-text";
+import type { UseChatHelpers } from '@ai-sdk/react'
+import type { UIMessage } from 'ai'
+import cn from 'classnames'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import Markdown from 'react-markdown'
+import { ChevronDownIcon, ChevronUpIcon } from './icons'
+import { markdownComponents } from './markdown-components'
+import ShinyText from './shiny-text'
 
 interface ReasoningPart {
-  type: "reasoning";
-  reasoning: string;
-  details: Array<{ type: "text"; text: string }>;
+  type: 'reasoning'
+  reasoning: string
+  details: Array<{ type: 'text'; text: string }>
 }
 
 interface ReasoningMessagePartProps {
-  part: ReasoningPart;
-  isReasoning: boolean;
+  part: ReasoningPart
+  isReasoning: boolean
 }
 
 export function ReasoningMessagePart({
   part,
   isReasoning,
 }: ReasoningMessagePartProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true)
 
   const variants = {
     collapsed: {
@@ -35,30 +35,41 @@ export function ReasoningMessagePart({
       marginBottom: 0,
     },
     expanded: {
-      height: "auto",
+      height: 'auto',
       opacity: 1,
-      marginTop: "1rem",
+      marginTop: '1rem',
       marginBottom: 0,
     },
-  };
+  }
 
   useEffect(() => {
     if (!isReasoning) {
-      setIsExpanded(false);
+      setIsExpanded(false)
     }
-  }, [isReasoning]);
+  }, [isReasoning])
 
   return (
     <div className="flex flex-col">
       {isReasoning ? (
-        <div className="flex flex-row gap-2 items-center">
-          <ShinyText text="Reasoning" disabled={false} speed={2} className='font-normal text-sm' />
+        <div className="flex flex-row items-center gap-2">
+          <ShinyText
+            text="Reasoning"
+            disabled={false}
+            speed={2}
+            className="font-light text-sm"
+          />
         </div>
       ) : (
-        <button  onClick={() => {
-          setIsExpanded(!isExpanded);
-        }} className="flex flex-row gap-2 items-center cursor-pointer">
-          <p  className='font-normal text-sm dark:text-[#b5b5b5a4] text-[#54545494]'>Reasoned for a few seconds</p>
+        <button
+          type="button"
+          onClick={() => {
+            setIsExpanded(!isExpanded)
+          }}
+          className="flex cursor-pointer flex-row items-center gap-2"
+        >
+          <p className="font-light text-[#54545494] text-sm transition-colors hover:text-black/80 dark:text-[#b5b5b5a4] dark:hover:text-white/80">
+            Reasoned for a few seconds
+          </p>
           {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
         </button>
       )}
@@ -67,21 +78,24 @@ export function ReasoningMessagePart({
         {isExpanded && (
           <motion.div
             key="reasoning"
-            className="text-sm dark:text-zinc-400 text-zinc-600 flex flex-col gap-4 border-l pl-3 dark:border-zinc-800"
+            className="flex flex-col gap-4 border-l pl-3 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400"
             initial="collapsed"
             animate="expanded"
             exit="collapsed"
             variants={variants}
-            transition={{ duration: 0.2, ease: "easeInOut" }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
           >
             {part.details.map((detail, detailIndex) =>
-              detail.type === "text" ? (
-                <Markdown key={detailIndex} components={markdownComponents}>
+              detail.type === 'text' ? (
+                <Markdown
+                  key={`${detailIndex}-${detail.text}`}
+                  components={markdownComponents}
+                >
                   {detail.text}
                 </Markdown>
               ) : (
-                "<redacted>"
-              ),
+                '<redacted>'
+              )
             )}
 
             {/* <Markdown components={markdownComponents}>{reasoning}</Markdown> */}
@@ -89,92 +103,98 @@ export function ReasoningMessagePart({
         )}
       </AnimatePresence>
     </div>
-  );
+  )
 }
 
 interface TextMessagePartProps {
-  text: string;
+  text: string
 }
 
 export function TextMessagePart({ text }: TextMessagePartProps) {
-  return (
-      <Markdown components={markdownComponents}>{text}</Markdown>
-  );
+  return <Markdown components={markdownComponents}>{text}</Markdown>
 }
 
 interface MessagesProps {
-  messages: Array<UIMessage>;
-  status: UseChatHelpers["status"];
+  messages: Array<UIMessage>
+  status: UseChatHelpers['status']
 }
 
 export function Messages({ messages, status }: MessagesProps) {
-  const messagesRef = useRef<HTMLDivElement>(null);
-  const messagesLength = useMemo(() => messages.length, [messages]);
+  const messagesRef = useRef<HTMLDivElement>(null)
+  const messagesLength = useMemo(() => messages.length, [messages])
 
   useEffect(() => {
     if (messagesRef.current) {
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
-  }, [messagesLength]);
+  }, [messagesLength])
 
   return (
     <div
-      className="flex flex-col gap-4 overflow-y-scroll items-center w-full"
+      className="flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
       {messages.map((message) => (
         <div
           key={message.id}
           className={cn(
-            "flex flex-col gap-4 last-of-type:mb-12 first-of-type:mt-16 w-full",
+            'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
           )}
         >
           <div
-            className={cn("flex flex-col gap-4", {
-              "dark:bg-zinc-800 bg-zinc-100 px-2 py-1 rounded-lg w-fit ml-auto":
-                message.role === "user",
-              "": message.role === "assistant",
+            className={cn('flex flex-col gap-2', {
+              'ml-auto w-fit rounded-lg bg-zinc-100 px-2 py-1 dark:bg-zinc-800':
+                message.role === 'user',
+              '': message.role === 'assistant',
             })}
           >
             {message.parts.map((part, partIndex) => {
-              if (part.type === "text" && message.role !== "user") {
+              if (part.type === 'text' && message.role !== 'user') {
                 return (
                   <TextMessagePart
                     key={`${message.id}-${partIndex}`} // 确保唯一 key
                     text={part.text}
                   />
-                );
+                )
               }
 
-              if (part.type === "text" && message.role == "user") {
+              if (part.type === 'text' && message.role === 'user') {
                 return (
-                  <div key={`${message.id}-${partIndex}`} className="flex flex-col gap-4 text-sm">
+                  <div
+                    key={`${message.id}-${partIndex}`}
+                    className="flex flex-col gap-4 font-light text-sm"
+                  >
                     {part.text}
                   </div>
-                );
+                )
               }
 
-              if (part.type === "reasoning") {
+              if (part.type === 'reasoning') {
                 return (
                   <ReasoningMessagePart
                     key={`${message.id}-${partIndex}`}
                     // @ts-expect-error export ReasoningUIPart
                     part={part}
                     isReasoning={
-                      status === "streaming" &&
+                      status === 'streaming' &&
                       partIndex === message.parts.length - 1
                     }
                   />
-                );
+                )
               }
             })}
           </div>
         </div>
       ))}
 
-      {status === "submitted" && (
-         <ShinyText text="Connecting..." disabled={false} speed={2} className='font-normal text-sm w-full mb-12' />
+      {status === 'submitted' && (
+        <ShinyText
+          text="Connecting..."
+          disabled={false}
+          speed={2}
+          className="mb-12 w-full font-light text-sm"
+        />
       )}
     </div>
-  );
+  )
 }

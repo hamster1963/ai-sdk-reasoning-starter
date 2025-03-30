@@ -4,16 +4,16 @@ export const ArrowUpIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinejoin="round"
     viewBox="0 0 16 16"
     width={size}
-    style={{ color: "currentcolor" }}
+    style={{ color: 'currentcolor' }}
   >
     <path
       fillRule="evenodd"
       clipRule="evenodd"
       d="M8.70711 1.39644C8.31659 1.00592 7.68342 1.00592 7.2929 1.39644L2.21968 6.46966L1.68935 6.99999L2.75001 8.06065L3.28034 7.53032L7.25001 3.56065V14.25V15H8.75001V14.25V3.56065L12.7197 7.53032L13.25 8.06065L14.3107 6.99999L13.7803 6.46966L8.70711 1.39644Z"
       fill="currentColor"
-    ></path>
+    />
   </svg>
-);
+)
 
 export const ChevronDownIcon = ({ size = 16 }: { size?: number }) => (
   <svg
@@ -21,7 +21,7 @@ export const ChevronDownIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinejoin="round"
     viewBox="0 0 16 16"
     width={size}
-    style={{ color: "currentcolor" }}
+    style={{ color: 'currentcolor' }}
   >
     <path
       fillRule="evenodd"
@@ -30,7 +30,7 @@ export const ChevronDownIcon = ({ size = 16 }: { size?: number }) => (
       fill="currentColor"
     />
   </svg>
-);
+)
 
 export const ChevronUpIcon = ({ size = 16 }: { size?: number }) => (
   <svg
@@ -38,7 +38,7 @@ export const ChevronUpIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinejoin="round"
     viewBox="0 0 16 16"
     width={size}
-    style={{ color: "currentcolor" }}
+    style={{ color: 'currentcolor' }}
     className="rotate-0"
   >
     <path
@@ -46,9 +46,9 @@ export const ChevronUpIcon = ({ size = 16 }: { size?: number }) => (
       clipRule="evenodd"
       d="M6.74999 3.93933L7.28032 4.46966L10.1035 7.29288C10.4941 7.68341 10.4941 8.31657 10.1035 8.7071L7.28032 11.5303L6.74999 12.0607L5.68933 11L6.21966 10.4697L8.68933 7.99999L6.21966 5.53032L5.68933 4.99999L6.74999 3.93933Z"
       fill="currentColor"
-    ></path>
+    />
   </svg>
-);
+)
 
 export const SpinnerIcon = ({ size = 16 }: { size?: number }) => (
   <svg
@@ -56,7 +56,7 @@ export const SpinnerIcon = ({ size = 16 }: { size?: number }) => (
     strokeLinejoin="round"
     viewBox="0 0 16 16"
     width={size}
-    style={{ color: "currentcolor" }}
+    style={{ color: 'currentcolor' }}
   >
     <g clipPath="url(#clip0_2393_1490)">
       <path d="M8 0V4" stroke="currentColor" strokeWidth="1.5" />
@@ -121,7 +121,7 @@ export const SpinnerIcon = ({ size = 16 }: { size?: number }) => (
       </clipPath>
     </defs>
   </svg>
-);
+)
 
 export const VercelIcon = ({ size = 17 }) => {
   return (
@@ -130,7 +130,7 @@ export const VercelIcon = ({ size = 17 }) => {
       strokeLinejoin="round"
       viewBox="0 0 16 16"
       width={size}
-      style={{ color: "currentcolor" }}
+      style={{ color: 'currentcolor' }}
     >
       <path
         fillRule="evenodd"
@@ -139,8 +139,8 @@ export const VercelIcon = ({ size = 17 }) => {
         fill="currentColor"
       />
     </svg>
-  );
-};
+  )
+}
 
 export const StopIcon = ({ size = 16 }: { size?: number }) => {
   return (
@@ -148,7 +148,7 @@ export const StopIcon = ({ size = 16 }: { size?: number }) => {
       height={size}
       viewBox="0 0 16 16"
       width={size}
-      style={{ color: "currentcolor" }}
+      style={{ color: 'currentcolor' }}
     >
       <path
         fillRule="evenodd"
@@ -157,8 +157,8 @@ export const StopIcon = ({ size = 16 }: { size?: number }) => {
         fill="currentColor"
       />
     </svg>
-  );
-};
+  )
+}
 
 export const CheckedSquare = ({ size = 16 }: { size?: number }) => {
   return (
@@ -167,17 +167,17 @@ export const CheckedSquare = ({ size = 16 }: { size?: number }) => {
       strokeLinejoin="round"
       viewBox="0 0 16 16"
       width={size}
-      style={{ color: "currentcolor" }}
+      style={{ color: 'currentcolor' }}
     >
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M15 16H1C0.447715 16 0 15.5523 0 15V1C0 0.447715 0.447716 0 1 0L15 8.17435e-06C15.5523 8.47532e-06 16 0.447724 16 1.00001V15C16 15.5523 15.5523 16 15 16ZM11.7803 6.28033L12.3107 5.75L11.25 4.68934L10.7197 5.21967L6.5 9.43935L5.28033 8.21967L4.75001 7.68934L3.68934 8.74999L4.21967 9.28033L5.96967 11.0303C6.11032 11.171 6.30109 11.25 6.5 11.25C6.69891 11.25 6.88968 11.171 7.03033 11.0303L11.7803 6.28033Z"
         fill="currentColor"
-      ></path>
+      />
     </svg>
-  );
-};
+  )
+}
 
 export const UncheckedSquare = ({ size = 16 }: { size?: number }) => {
   return (
@@ -186,7 +186,7 @@ export const UncheckedSquare = ({ size = 16 }: { size?: number }) => {
       strokeLinejoin="round"
       viewBox="0 0 16 16"
       width={size}
-      style={{ color: "currentcolor" }}
+      style={{ color: 'currentcolor' }}
     >
       <rect
         x="1"
@@ -198,5 +198,5 @@ export const UncheckedSquare = ({ size = 16 }: { size?: number }) => {
         fill="none"
       />
     </svg>
-  );
-};
+  )
+}

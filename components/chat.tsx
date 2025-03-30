@@ -1,60 +1,55 @@
-"use client";
+'use client'
 
-import cn from "classnames";
-import { toast } from "sonner";
-import { useChat } from "@ai-sdk/react";
-import { useState } from "react";
-import { Messages } from "./messages";
-import { modelID, models } from "@/lib/models";
-import { Footnote } from "./footnote";
-import {
-  ArrowUpIcon,
-  ChevronDownIcon,
-  StopIcon,
-} from "./icons";
+import { type modelID, models } from '@/lib/models'
+import { useChat } from '@ai-sdk/react'
 import { LightBulbIcon } from '@heroicons/react/24/outline'
-import { Input } from "./input";
-
+import cn from 'classnames'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Footnote } from './footnote'
+import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
+import { Input } from './input'
+import { Messages } from './messages'
 
 export function Chat() {
-  const [input, setInput] = useState<string>("");
-  const [selectedModelId, setSelectedModelId] = useState<modelID>("deepseek-r1");
-  const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true);
+  const [input, setInput] = useState<string>('')
+  const [selectedModelId, setSelectedModelId] = useState<modelID>('deepseek-r1')
+  const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
 
   const { messages, append, status, stop } = useChat({
-    id: "primary",
+    id: 'primary',
     onError: () => {
-      toast.error("An error occurred, please try again!");
+      toast.error('An error occurred, please try again!')
     },
-  });
+  })
 
-  const isGeneratingResponse = ["streaming", "submitted"].includes(status);
+  const isGeneratingResponse = ['streaming', 'submitted'].includes(status)
 
   return (
     <div
       className={cn(
-        "px-4 md:px-0 pb-4 pt-8 flex flex-col h-dvh items-center w-full max-w-3xl",
+        'flex h-dvh w-full max-w-3xl flex-col items-center px-4 pt-8 pb-4 md:px-0',
         {
-          "justify-between": messages.length > 0,
-          "justify-center gap-4": messages.length === 0,
-        },
+          'justify-between': messages.length > 0,
+          'justify-center gap-4': messages.length === 0,
+        }
       )}
     >
       {messages.length > 0 ? (
         <Messages messages={messages} status={status} />
       ) : (
-        <div className="flex flex-col gap-0.5 sm:text-2xl text-xl w-full">
-          <div className="flex flex-row gap-2 items-center">
+        <div className="flex w-full flex-col gap-0.5 text-xl sm:text-2xl">
+          <div className="flex flex-row items-center gap-2">
             <div>Welcome to the AI SDK Reasoning Preview.</div>
           </div>
-          <div className="dark:text-zinc-500 text-zinc-400">
+          <div className="text-zinc-400 dark:text-zinc-500">
             What would you like me to think about today?
           </div>
         </div>
       )}
 
-      <div className="flex flex-col gap-4 w-full">
-        <div className="w-full relative p-3 dark:bg-zinc-800 shadow-sm rounded-2xl flex flex-col gap-1 bg-zinc-100 border-zinc-200/60 border-[1px] dark:border-zinc-700">
+      <div className="flex w-full flex-col gap-4">
+        <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
           <Input
             input={input}
             setInput={setInput}
@@ -65,40 +60,41 @@ export function Chat() {
 
           <div className="absolute bottom-2.5 left-2.5">
             <button
-              // disabled={selectedModelId !== "sonnet-3.7"}
+              disabled={selectedModelId !== 'deepseek-r1'}
+              type="button"
               className={cn(
-                "relative w-fit p-2 text-xs transition-colors rounded-full flex flex-row items-center gap-2  cursor-pointer disabled:opacity-50",
+                'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
                 {
-                  "text-blue-500 dark:text-blue-600": isReasoningEnabled,
-                },
+                  'text-blue-500 dark:text-blue-600': isReasoningEnabled,
+                }
               )}
               onClick={() => {
-                setIsReasoningEnabled(!isReasoningEnabled);
+                setIsReasoningEnabled(!isReasoningEnabled)
               }}
             >
-              <LightBulbIcon className={cn("h-4 w-4")} />
+              <LightBulbIcon className={cn('h-4 w-4')} />
               <div>Reasoning</div>
             </button>
           </div>
 
-          <div className="absolute bottom-2.5 right-2.5 flex flex-row gap-2">
-            <div className="relative w-fit text-sm p-1.5 rounded-lg flex flex-row items-center gap-0.5 dark:hover:bg-zinc-700 hover:bg-zinc-200 cursor-pointer">
+          <div className="absolute right-2.5 bottom-2.5 flex flex-row gap-2">
+            <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700">
               {/* <div>
                 {selectedModel ? selectedModel.name : "Models Unavailable!"}
               </div> */}
-              <div className="flex justify-center items-center text-xs text-zinc-500 dark:text-zinc-400 px-1">
+              <div className="flex items-center justify-center px-1 text-xs text-zinc-500 dark:text-zinc-400">
                 <span className="pr-1">{models[selectedModelId]}</span>
                 <ChevronDownIcon />
               </div>
 
               <select
-                className="absolute opacity-0 w-full p-1 left-0 cursor-pointer"
+                className="absolute left-0 w-full cursor-pointer p-1 opacity-0"
                 value={selectedModelId}
                 onChange={(event) => {
-                  if (event.target.value !== "sonnet-3.7") {
-                    setIsReasoningEnabled(true);
+                  if (event.target.value !== 'sonnet-3.7') {
+                    setIsReasoningEnabled(true)
                   }
-                  setSelectedModelId(event.target.value as modelID);
+                  setSelectedModelId(event.target.value as modelID)
                 }}
               >
                 {Object.entries(models).map(([id, name]) => (
@@ -110,29 +106,30 @@ export function Chat() {
             </div>
 
             <button
+              type="button"
               className={cn(
-                "size-6 flex mt-0.5 flex-row justify-center items-center dark:bg-zinc-100 bg-zinc-900 dark:text-zinc-900 text-zinc-100 p-1.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-300 hover:scale-105 active:scale-95 transition-all",
+                'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-zinc-900 p-1.5 text-zinc-100 transition-all hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300',
                 {
-                  "dark:bg-zinc-200 dark:text-zinc-500":
-                    isGeneratingResponse || input === "",
-                },
+                  'dark:bg-zinc-200 dark:text-zinc-500':
+                    isGeneratingResponse || input === '',
+                }
               )}
               onClick={() => {
-                if (input === "") {
-                  return;
+                if (input === '') {
+                  return
                 }
 
                 if (isGeneratingResponse) {
-                  stop();
+                  stop()
                 } else {
                   append({
-                    role: "user",
+                    role: 'user',
                     content: input,
                     createdAt: new Date(),
-                  });
+                  })
                 }
 
-                setInput("");
+                setInput('')
               }}
             >
               {isGeneratingResponse ? <StopIcon /> : <ArrowUpIcon />}
@@ -143,5 +140,5 @@ export function Chat() {
         <Footnote />
       </div>
     </div>
-  );
+  )
 }
