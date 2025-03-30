@@ -33,5 +33,5 @@ export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 
 export const models: Record<modelID, string> = {
   // 'deepseek-r1': 'DeepSeek-R1',
-  'deepSeek-r1-7B':'DeepSeek-R1 Distill Qwen 7B',
+  'deepSeek-r1-7B': 'DeepSeek-R1 Distill Qwen 7B',
 }

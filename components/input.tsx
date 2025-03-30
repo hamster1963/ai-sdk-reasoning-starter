@@ -21,8 +21,8 @@ export function Input({
   const { append } = useChat({
     id: 'primary',
     body: {
-      selectedModelId,
-      isReasoningEnabled,
+      selectedModelId: selectedModelId,
+      isReasoningEnabled: isReasoningEnabled,
     },
     onError: () => {
       toast.error('An error occurred, please try again!')
@@ -56,7 +56,6 @@ export function Input({
             content: input,
             createdAt: new Date(),
           })
-
           setInput('')
         }
       }}

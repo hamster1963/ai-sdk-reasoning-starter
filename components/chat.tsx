@@ -13,11 +13,16 @@ import { Messages } from './messages'
 
 export function Chat() {
   const [input, setInput] = useState<string>('')
-  const [selectedModelId, setSelectedModelId] = useState<modelID>('deepSeek-r1-7B')
+  const [selectedModelId, setSelectedModelId] =
+    useState<modelID>('deepSeek-r1-7B')
   const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
 
   const { messages, append, status, stop } = useChat({
     id: 'primary',
+    body: {
+      selectedModelId: selectedModelId,
+      isReasoningEnabled: isReasoningEnabled,
+    },
     onError: () => {
       toast.error('An error occurred, please try again!')
     },
