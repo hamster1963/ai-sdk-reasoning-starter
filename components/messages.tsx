@@ -131,7 +131,7 @@ export function Messages({ messages, status }: MessagesProps) {
 
   return (
     <div
-      className="flex w-full flex-col items-center gap-4 overflow-y-scroll"
+      className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
       {messages.map((message) => (

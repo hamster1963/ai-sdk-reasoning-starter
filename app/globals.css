@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   background: var(--background);
 }
+
+.scrollbar-hidden {
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* Chrome, Safari 和 Opera */
+}
