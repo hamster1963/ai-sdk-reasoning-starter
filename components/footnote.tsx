@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export function Footnote() {
   return (
-    <div className="hidden text-xs text-zinc-400 leading-5 sm:block">
+    <div className="hidden text-neutral-400 text-xs leading-5 sm:block">
       This preview is built using{' '}
       <Link
         className="underline underline-offset-2"

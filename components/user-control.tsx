@@ -30,7 +30,7 @@ export default function UserControl() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-lg shadow-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-none">
+      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-neutral-200/60 bg-neutral-100 p-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none">
         <Input
           input={input}
           setInput={setInput}
@@ -59,8 +59,8 @@ export default function UserControl() {
         </div>
 
         <div className="absolute right-2.5 bottom-2.5 flex flex-row gap-2">
-          <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-zinc-200 dark:hover:bg-zinc-700">
-            <div className="flex items-center justify-center px-1 text-xs text-zinc-500 dark:text-zinc-400">
+          <div className="relative flex w-fit cursor-pointer flex-row items-center gap-0.5 rounded-lg p-1.5 text-sm hover:bg-neutral-200 dark:hover:bg-neutral-700">
+            <div className="flex items-center justify-center px-1 text-neutral-500 text-xs dark:text-neutral-500">
               <span className="pr-1">{models[selectedModelId]}</span>
               <ChevronDownIcon />
             </div>
@@ -88,9 +88,9 @@ export default function UserControl() {
           <button
             type="button"
             className={cn(
-              'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-zinc-900 p-1.5 text-zinc-100 transition-all hover:scale-105 hover:bg-zinc-800 active:scale-95 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300',
+              'mt-0.5 flex size-6 flex-row items-center justify-center rounded-full bg-neutral-900 p-1.5 text-neutral-100 transition-all hover:scale-105 hover:bg-neutral-800 active:scale-95 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-300',
               {
-                'dark:bg-zinc-200 dark:text-zinc-500':
+                'dark:bg-neutral-200 dark:text-neutral-500':
                   isGeneratingResponse || input === '',
               }
             )}

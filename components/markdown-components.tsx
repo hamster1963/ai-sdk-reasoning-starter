@@ -14,7 +14,7 @@ export const markdownComponents: Partial<Components> = {
     return <p className="font-light text-sm leading-6">{children}</p>
   },
   pre: ({ children }) => (
-    <pre className="overflow-x-auto rounded-lg bg-zinc-100 p-2 text-black dark:bg-zinc-800 dark:text-white">
+    <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-2 text-black dark:bg-neutral-800 dark:text-white">
       {children}
     </pre>
   ),
@@ -28,7 +28,7 @@ export const markdownComponents: Partial<Components> = {
   code: ({ className, children }) => {
     const match = /language-(\w+)/.exec(className || '')
     return match ? (
-      <pre className="overflow-x-auto rounded-lg bg-zinc-100 p-2 text-black dark:bg-zinc-800 dark:text-white">
+      <pre className="overflow-x-auto rounded-lg bg-neutral-100 p-2 text-black dark:bg-neutral-800 dark:text-white">
         <code className={`language-${match[1]} text-sm`}>{children}</code>
       </pre>
     ) : (

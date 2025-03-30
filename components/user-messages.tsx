@@ -19,7 +19,7 @@ export default function UserMessages() {
           <div className="flex flex-row items-center gap-2">
             <div>Welcome to the AI SDK Preview.</div>
           </div>
-          <div className="text-zinc-400 dark:text-zinc-500">
+          <div className="text-neutral-400 dark:text-neutral-500">
             What would you like me to think about today?
           </div>
         </div>

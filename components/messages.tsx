@@ -50,35 +50,34 @@ export function ReasoningMessagePart({
 
   return (
     <div className="flex flex-col">
-      {isReasoning ? (
-        <div className="flex flex-row items-center gap-2">
+      <button
+        type="button"
+        onClick={() => {
+          setIsExpanded(!isExpanded)
+        }}
+        className="flex cursor-pointer flex-row items-center gap-2"
+      >
+        {isReasoning ? (
           <ShinyText
             text="Reasoning"
             disabled={false}
             speed={2}
             className="font-light text-sm"
           />
-        </div>
-      ) : (
-        <button
-          type="button"
-          onClick={() => {
-            setIsExpanded(!isExpanded)
-          }}
-          className="flex cursor-pointer flex-row items-center gap-2"
-        >
+        ) : (
           <p className="font-light text-[#54545494] text-sm transition-colors hover:text-black/80 dark:text-[#b5b5b5a4] dark:hover:text-white/80">
             Reasoned for a few seconds
           </p>
-          {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
-        </button>
-      )}
+        )}
+
+        {isExpanded ? <ChevronDownIcon /> : <ChevronUpIcon />}
+      </button>
 
       <AnimatePresence initial={false}>
         {isExpanded && (
           <motion.div
             key="reasoning"
-            className="flex flex-col gap-4 border-l pl-3 text-sm text-zinc-600 dark:border-zinc-800 dark:text-zinc-400"
+            className="flex flex-col gap-4 border-l pl-3 text-[#54545494] text-sm dark:border-neutral-800 dark:text-[#b5b5b5a4]"
             initial="collapsed"
             animate="expanded"
             exit="collapsed"
@@ -146,7 +145,7 @@ export function Messages({ messages, status }: MessagesProps) {
           >
             <div
               className={cn('flex flex-col gap-2', {
-                'ml-auto w-fit rounded-lg bg-zinc-100 px-2 py-1 dark:bg-zinc-800':
+                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-800':
                   message.role === 'user',
                 '': message.role === 'assistant',
               })}

@@ -6,7 +6,7 @@ export const DeployButton = () => (
     }
     target="_blank"
     rel="noopener noreferrer"
-    className="ml-2 inline-flex items-center gap-2 rounded-md bg-black px-3 py-1.5 text-sm text-white hover:bg-zinc-900 dark:bg-white dark:text-black dark:hover:bg-zinc-100"
+    className="ml-2 inline-flex items-center gap-2 rounded-md bg-black px-3 py-1.5 text-sm text-white hover:bg-neutral-900 dark:bg-white dark:text-black dark:hover:bg-neutral-100"
   >
     <svg
       data-testid="geist-icon"
