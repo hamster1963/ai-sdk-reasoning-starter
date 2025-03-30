@@ -60,7 +60,7 @@ export function Chat() {
 
           <div className="absolute bottom-2.5 left-2.5">
             <button
-              disabled={selectedModelId !== 'deepseek-r1'}
+              disabled={selectedModelId === 'deepseek-r1'}
               type="button"
               className={cn(
                 'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
