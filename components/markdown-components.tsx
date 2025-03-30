@@ -2,15 +2,39 @@ import Link from 'next/link'
 import type { Components } from 'react-markdown'
 
 export const markdownComponents: Partial<Components> = {
-  p: ({ children }) => (
-    <p className="font-light text-sm leading-6">{children}</p>
+  p: ({ children }) => {
+    const isPreTag =
+      Array.isArray(children) &&
+      children.length > 0 &&
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (children[0] as any)?.type === 'pre'
+    if (isPreTag) {
+      return <>{children}</>
+    }
+    return <p className="font-light text-sm leading-6">{children}</p>
+  },
+  pre: ({ children }) => (
+    <pre className="overflow-x-auto rounded-lg bg-zinc-100 p-2 text-black dark:bg-zinc-800 dark:text-white">
+      {children}
+    </pre>
   ),
-  pre: ({ children }) => <>{children}</>,
   ol: ({ children, ...props }) => {
     return (
       <ol className="ml-6 list-outside list-decimal" {...props}>
         {children}
       </ol>
+    )
+  },
+  code: ({ className, children }) => {
+    const match = /language-(\w+)/.exec(className || '')
+    return match ? (
+      <pre className="overflow-x-auto rounded-lg bg-zinc-100 p-2 text-black dark:bg-zinc-800 dark:text-white">
+        <code className={`language-${match[1]} text-sm`}>{children}</code>
+      </pre>
+    ) : (
+      <code className="rounded-md bg-gray-200 px-1 py-0.5 dark:bg-gray-800">
+        {children}
+      </code>
     )
   },
   li: ({ children, ...props }) => {
