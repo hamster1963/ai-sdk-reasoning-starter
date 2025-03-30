@@ -40,7 +40,7 @@ export function Chat() {
       ) : (
         <div className="flex w-full flex-col gap-0.5 text-xl sm:text-2xl">
           <div className="flex flex-row items-center gap-2">
-            <div>Welcome to the AI SDK Reasoning Preview.</div>
+            <div>Welcome to the AI SDK Preview.</div>
           </div>
           <div className="text-zinc-400 dark:text-zinc-500">
             What would you like me to think about today?
@@ -49,7 +49,7 @@ export function Chat() {
       )}
 
       <div className="flex w-full flex-col gap-4">
-        <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800">
+        <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-lg shadow-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
           <Input
             input={input}
             setInput={setInput}
