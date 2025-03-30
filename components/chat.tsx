@@ -13,7 +13,7 @@ import { Messages } from './messages'
 
 export function Chat() {
   const [input, setInput] = useState<string>('')
-  const [selectedModelId, setSelectedModelId] = useState<modelID>('deepseek-r1')
+  const [selectedModelId, setSelectedModelId] = useState<modelID>('deepSeek-r1-7B')
   const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
 
   const { messages, append, status, stop } = useChat({
@@ -60,7 +60,7 @@ export function Chat() {
 
           <div className="absolute bottom-2.5 left-2.5">
             <button
-              disabled={selectedModelId === 'deepseek-r1'}
+              disabled={selectedModelId === 'deepSeek-r1-7B'}
               type="button"
               className={cn(
                 'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',

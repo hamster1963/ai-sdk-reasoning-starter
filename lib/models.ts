@@ -14,11 +14,17 @@ const deepseek = createDeepSeek({
 // custom provider with different model settings:
 export const myProvider = customProvider({
   languageModels: {
-    'deepseek-r1': wrapLanguageModel({
+    // 'deepseek-r1': wrapLanguageModel({
+    //   middleware: extractReasoningMiddleware({
+    //     tagName: 'think',
+    //   }),
+    //   model: deepseek('deepseek-ai/DeepSeek-R1'),
+    // }),
+    'deepSeek-r1-7B': wrapLanguageModel({
       middleware: extractReasoningMiddleware({
         tagName: 'think',
       }),
-      model: deepseek('deepseek-ai/DeepSeek-R1'),
+      model: deepseek('deepseek-ai/DeepSeek-R1-Distill-Qwen-7B'),
     }),
   },
 })
@@ -26,5 +32,6 @@ export const myProvider = customProvider({
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
 
 export const models: Record<modelID, string> = {
-  'deepseek-r1': 'DeepSeek-R1',
+  // 'deepseek-r1': 'DeepSeek-R1',
+  'deepSeek-r1-7B':'DeepSeek-R1 Distill Qwen 7B',
 }
