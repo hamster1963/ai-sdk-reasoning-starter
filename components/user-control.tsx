@@ -30,7 +30,7 @@ export default function UserControl() {
 
   return (
     <div className="flex w-full flex-col gap-4">
-      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-lg shadow-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+      <div className="relative flex w-full flex-col gap-1 rounded-2xl border-[1px] border-zinc-200/60 bg-zinc-100 p-3 shadow-lg shadow-zinc-100 dark:border-zinc-700 dark:bg-zinc-800 dark:shadow-none">
         <Input
           input={input}
           setInput={setInput}
@@ -41,7 +41,7 @@ export default function UserControl() {
 
         <div className="absolute bottom-2.5 left-2.5">
           <button
-            disabled={!selectedModelId.includes('deepseek-r1')}
+            disabled={true}
             type="button"
             className={cn(
               'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',

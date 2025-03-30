@@ -31,7 +31,7 @@ export function Input({
 
   return (
     <textarea
-      className="mx-2 my-1 mb-12 min-h-12 w-full resize-none bg-transparent outline-none placeholder:font-light placeholder:text-zinc-300"
+      className="mx-2 my-1 mb-12 min-h-12 w-full resize-none bg-transparent outline-none placeholder:font-light placeholder:text-sm placeholder:text-zinc-300"
       placeholder="Send a message"
       value={input}
       onChange={(event) => {
