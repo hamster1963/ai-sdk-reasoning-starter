@@ -19,6 +19,12 @@ const openai = createOpenAI({
   compatibility: 'compatible',
 })
 
+const copilot = createOpenAI({
+  apiKey: process.env.COPILOT_API_KEY,
+  baseURL: process.env.COPILOT_API_URL,
+  compatibility: 'compatible',
+})
+
 // custom provider with different model settings:
 export const myProvider = customProvider({
   languageModels: {
@@ -42,6 +48,14 @@ export const myProvider = customProvider({
       }),
       model: openai('model_medical_20250122'),
     }),
+    'gpt-4o': wrapLanguageModel({
+      middleware: defaultSettingsMiddleware({
+        settings: {
+          temperature: 0.8,
+        },
+      }),
+      model: copilot('gpt-4o'),
+    }),
   },
 })
 
@@ -52,4 +66,5 @@ export const models: Record<modelID, string> = {
   'deepseek-r1': 'DeepSeek-R1',
   'deepseek-r1-7B': 'DeepSeek-R1 Distill Qwen 7B',
   'medical-70B': 'Medical-70B',
+  'gpt-4o': 'GPT-4o',
 }
