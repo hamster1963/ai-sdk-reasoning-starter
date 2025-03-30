@@ -65,14 +65,14 @@ export function Chat() {
               className={cn(
                 'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
                 {
-                  'text-blue-500 dark:text-blue-600': isReasoningEnabled,
+                  'text-green-700 ': isReasoningEnabled,
                 }
               )}
               onClick={() => {
                 setIsReasoningEnabled(!isReasoningEnabled)
               }}
             >
-              <LightBulbIcon className={cn('h-4 w-4')} />
+              <LightBulbIcon className={cn('size-4')} />
               <div>Reasoning</div>
             </button>
           </div>

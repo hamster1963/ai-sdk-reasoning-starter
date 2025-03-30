@@ -135,56 +135,60 @@ export function Messages({ messages, status }: MessagesProps) {
       ref={messagesRef}
     >
       {messages.map((message) => (
-        <div
-          key={message.id}
-          className={cn(
-            'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
-          )}
-        >
-          <div
-            className={cn('flex flex-col gap-2', {
-              'ml-auto w-fit rounded-lg bg-zinc-100 px-2 py-1 dark:bg-zinc-800':
-                message.role === 'user',
-              '': message.role === 'assistant',
-            })}
+        <AnimatePresence key={message.id}>
+          <motion.div
+            initial={{ y: 5, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            key={`message-${message.id}`}
+            className={cn(
+              'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
+            )}
           >
-            {message.parts.map((part, partIndex) => {
-              if (part.type === 'text' && message.role !== 'user') {
-                return (
-                  <TextMessagePart
-                    key={`${message.id}-${partIndex}`} // 确保唯一 key
-                    text={part.text}
-                  />
-                )
-              }
+            <div
+              className={cn('flex flex-col gap-2', {
+                'ml-auto w-fit rounded-lg bg-zinc-100 px-2 py-1 dark:bg-zinc-800':
+                  message.role === 'user',
+                '': message.role === 'assistant',
+              })}
+            >
+              {message.parts.map((part, partIndex) => {
+                if (part.type === 'text' && message.role !== 'user') {
+                  return (
+                    <TextMessagePart
+                      key={`${message.id}-${partIndex}`} // 确保唯一 key
+                      text={part.text}
+                    />
+                  )
+                }
 
-              if (part.type === 'text' && message.role === 'user') {
-                return (
-                  <div
-                    key={`${message.id}-${partIndex}`}
-                    className="flex flex-col gap-4 font-light text-sm"
-                  >
-                    {part.text}
-                  </div>
-                )
-              }
+                if (part.type === 'text' && message.role === 'user') {
+                  return (
+                    <div
+                      key={`${message.id}-${partIndex}`}
+                      className="flex flex-col gap-4 font-light text-sm"
+                    >
+                      {part.text}
+                    </div>
+                  )
+                }
 
-              if (part.type === 'reasoning') {
-                return (
-                  <ReasoningMessagePart
-                    key={`${message.id}-${partIndex}`}
-                    // @ts-expect-error export ReasoningUIPart
-                    part={part}
-                    isReasoning={
-                      status === 'streaming' &&
-                      partIndex === message.parts.length - 1
-                    }
-                  />
-                )
-              }
-            })}
-          </div>
-        </div>
+                if (part.type === 'reasoning') {
+                  return (
+                    <ReasoningMessagePart
+                      key={`${message.id}-${partIndex}`}
+                      // @ts-expect-error export ReasoningUIPart
+                      part={part}
+                      isReasoning={
+                        status === 'streaming' &&
+                        partIndex === message.parts.length - 1
+                      }
+                    />
+                  )
+                }
+              })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       ))}
 
       {status === 'submitted' && (

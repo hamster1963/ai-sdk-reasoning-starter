@@ -13,8 +13,7 @@ export async function POST(request: NextRequest) {
   } = await request.json()
 
   const stream = streamText({
-    system:
-      'you are a friendly assistant. do not use emojis in your responses.',
+    system: 'you are a friendly assistant.',
     model: myProvider.languageModel(selectedModelId),
     messages,
   })
