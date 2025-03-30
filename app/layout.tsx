@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 import { Toaster } from 'sonner'
 
 import './globals.css'
+import { ReactScan } from './react-scan'
 
 export const metadata: Metadata = {
   title: 'Reasoning Preview',
@@ -21,6 +22,7 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
     >
+      <ReactScan />
       <body>
         <Toaster position="top-center" />
         {children}
