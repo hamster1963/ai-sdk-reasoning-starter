@@ -87,11 +87,6 @@ export async function POST(request: NextRequest) {
         // Write the search results as an annotation
         dataStream.writeMessageAnnotation(searchAnnotation)
 
-        dataStream.writeData({
-          type: 'fetch',
-          status: `Found ${searchResults.length} results`,
-        })
-
         // If we have search results, update the system prompt
         if (searchResults.length > 0) {
           systemPrompt = `Please answer the question based on the reference materials 

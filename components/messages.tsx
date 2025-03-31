@@ -123,7 +123,7 @@ type AnnotationResult = {
   content: string
 }
 
-// Add the missing AnnotationDisplay component
+// Update the AnnotationDisplay component to handle popups
 function AnnotationDisplay({
   annotation,
   messageId,
@@ -134,6 +134,9 @@ function AnnotationDisplay({
   index: number
 }) {
   const [isExpanded, setIsExpanded] = useState(false)
+  const [activeCitation, setActiveCitation] = useState<number | null>(null)
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
+  const popupRef = useRef<HTMLDivElement>(null)
 
   const variants = {
     collapsed: {
@@ -148,6 +151,48 @@ function AnnotationDisplay({
       marginTop: '0.5rem',
       marginBottom: '0.5rem',
     },
+  }
+
+  useEffect(() => {
+    // Add global click event to close popup when clicking outside
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
+        setActiveCitation(null)
+      }
+    }
+
+    // Add escape key handler
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveCitation(null)
+      }
+    }
+
+    if (activeCitation !== null) {
+      document.addEventListener('click', handleClickOutside)
+      document.addEventListener('keydown', handleEscKey)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+      document.removeEventListener('keydown', handleEscKey)
+    }
+  }, [activeCitation])
+
+  const handleCitationClick = (e: React.MouseEvent, citationIndex: number) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    // Calculate position for popup
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = rect.left
+    const y = rect.bottom + window.scrollY + 5 // Show popup below the citation
+
+    setPopupPosition({ x, y })
+    setActiveCitation(citationIndex)
   }
 
   return (
@@ -186,6 +231,7 @@ function AnnotationDisplay({
                     target="_blank"
                     rel="noopener noreferrer"
                     className="break-all text-blue-600 hover:underline dark:text-blue-400"
+                    onClick={(e) => handleCitationClick(e, i)}
                   >
                     {item.title || item.url}
                   </a>
@@ -195,11 +241,52 @@ function AnnotationDisplay({
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Citation Popup */}
+      {activeCitation !== null && (
+        <div
+          ref={popupRef}
+          className="fixed z-10 max-w-md rounded-[20px] border border-neutral-200 bg-white px-4 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
+          style={{
+            top: `${popupPosition.y}px`,
+            left: `${popupPosition.x}px`,
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setActiveCitation(null)
+            }
+          }}
+          onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from closing it
+        >
+          <h4 className="mb-1 font-medium">
+            {annotation[activeCitation].title || `Source ${activeCitation + 1}`}
+          </h4>
+          <p className="mb-2 break-all text-neutral-500 text-xs dark:text-neutral-400">
+            <a
+              href={annotation[activeCitation].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {annotation[activeCitation].url}
+            </a>
+          </p>
+          <p className="text-sm">
+            {annotation[activeCitation].content.substring(0, 200)}...
+          </p>
+          <button
+            type="button"
+            className="mt-2 text-blue-600 text-xs hover:underline dark:text-blue-400"
+            onClick={() => setActiveCitation(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
     </div>
   )
 }
 
-// Update the TextMessagePart component to handle citations
 export function TextMessagePart({ text }: TextMessagePartProps) {
   return (
     <MemoizedReactMarkdown components={markdownComponents}>
@@ -223,8 +310,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight
     }
   }, [messagesLength])
-
-  console.log('Messages:', messages)
 
   return (
     <div
@@ -259,7 +344,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
               })}
               {message.role === 'assistant' &&
                 message.content === '' &&
-                fetchStatus !== 'pending' &&
                 !message.parts.filter((part) => part.type === 'reasoning') && (
                   <ShinyText
                     text="Generating..."
