@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
+import { MemoizedReactMarkdown } from './markdown'
 import { markdownComponents } from './markdown-components'
 import ShinyText from './shiny-text'
 
@@ -110,7 +111,11 @@ interface TextMessagePartProps {
 }
 
 export function TextMessagePart({ text }: TextMessagePartProps) {
-  return <Markdown components={markdownComponents}>{text}</Markdown>
+  return (
+    <MemoizedReactMarkdown components={markdownComponents}>
+      {text}
+    </MemoizedReactMarkdown>
+  )
 }
 
 interface MessagesProps {
@@ -121,6 +126,8 @@ interface MessagesProps {
 export function Messages({ messages, status }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
+
+  console.log(messages)
 
   useEffect(() => {
     if (messagesRef.current) {

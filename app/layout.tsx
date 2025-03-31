@@ -4,7 +4,6 @@ import type { Metadata, Viewport } from 'next'
 import { Toaster } from 'sonner'
 
 import './globals.css'
-import { ReactScan } from './react-scan'
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -29,7 +28,6 @@ export default function RootLayout({
       lang="en"
       className={`${GeistSans.variable} ${GeistMono.variable} bg-background`}
     >
-      <ReactScan />
       <body>
         <Toaster position="top-center" />
         {children}
