@@ -311,6 +311,8 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
     }
   }, [messagesLength])
 
+  console.log('Messages:', messages)
+
   return (
     <div
       className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
@@ -343,8 +345,8 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
                 )
               })}
               {message.role === 'assistant' &&
-                message.content === '' &&
-                !message.parts.filter((part) => part.type === 'reasoning') && (
+                message.content.length === 0 &&
+                (fetchStatus === 'Success' || !fetchStatus) && (
                   <ShinyText
                     text="Generating..."
                     disabled={false}
