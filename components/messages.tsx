@@ -9,7 +9,7 @@ import type React from 'react'
 import Markdown from 'react-markdown'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { MemoizedReactMarkdown } from './markdown'
-import { markdownComponents, parseCitations } from './markdown-components'
+import { markdownComponents } from './markdown-components'
 import ShinyText from './shiny-text'
 
 interface ReasoningPart {
@@ -109,7 +109,6 @@ export function ReasoningMessagePart({
 
 interface TextMessagePartProps {
   text: string
-  annotations?: AnnotationResult[]
 }
 
 type Annotation = {
@@ -122,157 +121,6 @@ type AnnotationResult = {
   title: string
   url: string
   content: string
-}
-
-// Enhanced citation handler with improved citation detection
-function CitationHandler({
-  children,
-  annotation,
-}: {
-  children: React.ReactNode
-  annotation: AnnotationResult[]
-}) {
-  const [activeCitation, setActiveCitation] = useState<number | null>(null)
-  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
-  const popupRef = useRef<HTMLDivElement>(null)
-
-  // Click outside handler to close the citation popup
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      // Only close if popup is active and click is outside popup
-      if (
-        activeCitation !== null &&
-        popupRef.current &&
-        !popupRef.current.contains(event.target as Node)
-      ) {
-        setActiveCitation(null)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [activeCitation])
-
-  // Handler for citation clicks
-  const handleCitationClick = (
-    citationNumber: number,
-    event?: React.MouseEvent
-  ) => {
-    // Prevent event propagation to avoid immediate closing
-    if (event) {
-      event.stopPropagation()
-    }
-
-    if (activeCitation === citationNumber) {
-      setActiveCitation(null)
-      return
-    }
-
-    // Calculate popup position from the click event
-    if (event) {
-      // Get viewport dimensions
-      const viewportWidth = window.innerWidth
-      const viewportHeight = window.innerHeight
-
-      // Set initial position at the mouse click
-      let x = event.clientX
-      let y = event.clientY + 20 // Add some offset below the mouse
-
-      // Ensure the popup doesn't go off screen (approximate popup width/height)
-      const popupWidth = 384 // max-w-md = 28rem = 448px, being conservative with 384px
-      const popupHeight = 200 // approximate height
-
-      // Adjust x position if it would go off the right edge
-      if (x + popupWidth > viewportWidth) {
-        x = Math.max(0, viewportWidth - popupWidth - 10)
-      }
-
-      // Adjust y position if it would go off the bottom edge
-      if (y + popupHeight > viewportHeight) {
-        y = Math.max(0, event.clientY - popupHeight - 10) // Show above the cursor
-      }
-
-      setPopupPosition({ x, y })
-    }
-
-    // Use setTimeout to avoid immediate closing due to the same click event
-    setTimeout(() => {
-      setActiveCitation(citationNumber)
-    }, 0)
-  }
-
-  const content = typeof children === 'string' ? children : ''
-  const hasCitationReferences = /\[\d+\]/.test(content)
-
-  return (
-    <div className="relative">
-      {hasCitationReferences ? (
-        <div className="font-light text-sm leading-6">
-          {parseCitations(content, (citationNumber) => {
-            try {
-              // Create a synthetic event from the current mouse position
-              const rect = document.body.getBoundingClientRect()
-              const x = window.event
-                ? (window.event as MouseEvent).clientX
-                : rect.left
-              const y = window.event
-                ? (window.event as MouseEvent).clientY
-                : rect.top
-
-              handleCitationClick(citationNumber, {
-                clientX: x,
-                clientY: y,
-                stopPropagation: () => {},
-              } as React.MouseEvent)
-            } catch (error) {
-              console.error('Error handling citation click', error)
-              setActiveCitation(citationNumber)
-            }
-          })}
-        </div>
-      ) : (
-        <MemoizedReactMarkdown components={markdownComponents}>
-          {content}
-        </MemoizedReactMarkdown>
-      )}
-
-      {activeCitation !== null && annotation[activeCitation - 1] && (
-        <div
-          ref={popupRef}
-          className="fixed z-10 max-w-md rounded-[20px] border border-neutral-200 bg-white px-4 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
-          style={{
-            top: `${popupPosition.y}px`,
-            left: `${popupPosition.x}px`,
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Escape') {
-              setActiveCitation(null)
-            }
-          }}
-          onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from closing it
-        >
-          <h4 className="mb-1 font-medium">
-            {annotation[activeCitation - 1].title || `Source ${activeCitation}`}
-          </h4>
-          <p className="mb-2 break-all text-neutral-500 text-xs dark:text-neutral-400">
-            <a
-              href={annotation[activeCitation - 1].url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:underline"
-            >
-              {annotation[activeCitation - 1].url}
-            </a>
-          </p>
-          <p className="text-sm">
-            {annotation[activeCitation - 1].content.substring(0, 200)}...
-          </p>
-        </div>
-      )}
-    </div>
-  )
 }
 
 // Add the missing AnnotationDisplay component
@@ -352,16 +200,12 @@ function AnnotationDisplay({
 }
 
 // Update the TextMessagePart component to handle citations
-export function TextMessagePart({ text, annotations }: TextMessagePartProps) {
-  if (!annotations || annotations.length === 0) {
-    return (
-      <MemoizedReactMarkdown components={markdownComponents}>
-        {text}
-      </MemoizedReactMarkdown>
-    )
-  }
-
-  return <CitationHandler annotation={annotations}>{text}</CitationHandler>
+export function TextMessagePart({ text }: TextMessagePartProps) {
+  return (
+    <MemoizedReactMarkdown components={markdownComponents}>
+      {text}
+    </MemoizedReactMarkdown>
+  )
 }
 
 interface MessagesProps {
@@ -437,7 +281,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
                     <TextMessagePart
                       key={`${message.id}-${partIndex}`}
                       text={part.text}
-                      annotations={annotationResults}
                     />
                   )
                 }
