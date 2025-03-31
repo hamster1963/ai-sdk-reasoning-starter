@@ -121,13 +121,92 @@ export function TextMessagePart({ text }: TextMessagePartProps) {
 interface MessagesProps {
   messages: Array<UIMessage>
   status: UseChatHelpers['status']
+  fetchStatus?: string
 }
 
-export function Messages({ messages, status }: MessagesProps) {
+type Annotation = {
+  content: string
+  title: string
+  url: string
+}
+
+// Add a new AnnotationDisplay component to handle the expanded/collapsed state
+function AnnotationDisplay({
+  annotation,
+  messageId,
+  index,
+}: {
+  annotation: Annotation[]
+  messageId: string
+  index: number
+}) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const variants = {
+    collapsed: {
+      height: 0,
+      opacity: 0,
+      marginTop: 0,
+      marginBottom: 0,
+    },
+    expanded: {
+      height: 'auto',
+      opacity: 1,
+      marginTop: '0.5rem',
+      marginBottom: '0.5rem',
+    },
+  }
+
+  return (
+    <div className="flex flex-col">
+      <div
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setIsExpanded(!isExpanded)
+          }
+        }}
+        key={`annotation-${messageId}-${index}`}
+        className="flex w-fit cursor-pointer flex-col rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/70"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        {annotation.length} webpages{' '}
+      </div>
+
+      <AnimatePresence initial={false}>
+        {isExpanded && (
+          <motion.div
+            key="annotation-list"
+            className="mt-2 flex flex-col gap-2 text-neutral-700 text-xs dark:text-neutral-300"
+            initial="collapsed"
+            animate="expanded"
+            exit="collapsed"
+            variants={variants}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+          >
+            <ul className="list-disc space-y-1 pl-5">
+              {annotation.map((item, i) => (
+                <li key={`${messageId}-${index}-${i + 1}`}>
+                  <a
+                    href={item.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="break-all text-blue-600 hover:underline dark:text-blue-400"
+                  >
+                    {item.title || item.url}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+export function Messages({ messages, status, fetchStatus }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
-
-  console.log(messages)
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -141,62 +220,86 @@ export function Messages({ messages, status }: MessagesProps) {
       ref={messagesRef}
     >
       {messages.map((message) => (
-        <AnimatePresence key={message.id}>
-          <motion.div
-            initial={{ y: 5, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            key={`message-${message.id}`}
-            className={cn(
-              'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
-            )}
+        <div
+          key={`message-${message.id}`}
+          className={cn(
+            'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
+          )}
+        >
+          <div
+            className={cn('flex flex-col gap-2', {
+              'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
+                message.role === 'user',
+              '': message.role === 'assistant',
+            })}
           >
-            <div
-              className={cn('flex flex-col gap-2', {
-                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
-                  message.role === 'user',
-                '': message.role === 'assistant',
-              })}
-            >
-              {message.parts.map((part, partIndex) => {
-                if (part.type === 'text' && message.role !== 'user') {
-                  return (
-                    <TextMessagePart
-                      key={`${message.id}-${partIndex}`} // 确保唯一 key
-                      text={part.text}
-                    />
-                  )
-                }
-
-                if (part.type === 'text' && message.role === 'user') {
-                  return (
-                    <div
-                      key={`${message.id}-${partIndex}`}
-                      className="flex flex-col gap-4 font-light text-sm"
-                    >
-                      {part.text}
-                    </div>
-                  )
-                }
-
-                if (part.type === 'reasoning') {
-                  return (
-                    <ReasoningMessagePart
-                      key={`${message.id}-${partIndex}`}
-                      // @ts-expect-error export ReasoningUIPart
-                      part={part}
-                      isReasoning={
-                        status === 'streaming' &&
-                        partIndex === message.parts.length - 1
-                      }
-                    />
-                  )
-                }
-              })}
-            </div>
-          </motion.div>
-        </AnimatePresence>
+            {message.annotations?.map((annotation, index) => {
+              const annotationList = annotation as Annotation[]
+              return (
+                <AnnotationDisplay
+                  key={`annotation-display-${message.id}-${index}`}
+                  annotation={annotationList}
+                  messageId={message.id}
+                  index={index}
+                />
+              )
+            })}
+            {message.role === 'assistant' &&
+              message.content === '' &&
+              fetchStatus !== 'pending' &&
+              !message.parts.filter((part) => part.type === 'reasoning') && (
+                <ShinyText
+                  text="Generating..."
+                  disabled={false}
+                  speed={2}
+                  className="w-full font-light text-sm"
+                />
+              )}
+            {message.parts.map((part, partIndex) => {
+              if (part.type === 'text' && message.role !== 'user') {
+                return (
+                  <TextMessagePart
+                    key={`${message.id}-${partIndex}`} // 确保唯一 key
+                    text={part.text}
+                  />
+                )
+              }
+              if (part.type === 'text' && message.role === 'user') {
+                return (
+                  <div
+                    key={`${message.id}-${partIndex}`}
+                    className="flex flex-col gap-4 font-light text-sm"
+                  >
+                    {part.text}
+                  </div>
+                )
+              }
+              if (part.type === 'reasoning') {
+                return (
+                  <ReasoningMessagePart
+                    key={`${message.id}-${partIndex}`}
+                    // @ts-expect-error export ReasoningUIPart
+                    part={part}
+                    isReasoning={
+                      status === 'streaming' &&
+                      partIndex === message.parts.length - 1
+                    }
+                  />
+                )
+              }
+            })}
+          </div>
+        </div>
       ))}
 
+      {fetchStatus === 'pending' && status !== 'submitted' && (
+        <ShinyText
+          text="Fetching..."
+          disabled={false}
+          speed={2}
+          className="-mt-2 mb-12 w-full font-light text-sm"
+        />
+      )}
       {status === 'submitted' && (
         <ShinyText
           text="Connecting..."

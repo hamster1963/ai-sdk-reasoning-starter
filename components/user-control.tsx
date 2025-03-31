@@ -1,6 +1,6 @@
 import { DefaultModelID, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
-import { LightBulbIcon } from '@heroicons/react/24/outline'
+import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/outline'
 import cn from 'classnames'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -14,12 +14,14 @@ export default function UserControl() {
   const [selectedModelId, setSelectedModelId] =
     useState<modelID>(DefaultModelID)
   const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
+  const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
 
-  const { append, status, stop } = useChat({
+  const { append, status, stop, setData } = useChat({
     id: 'primary',
     body: {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
+      isSearchEnabled: isSearchEnabled,
     },
     onError: () => {
       toast.error('An error occurred, please try again!')
@@ -37,9 +39,10 @@ export default function UserControl() {
           selectedModelId={selectedModelId}
           isGeneratingResponse={isGeneratingResponse}
           isReasoningEnabled={isReasoningEnabled}
+          isSearchEnabled={isSearchEnabled}
         />
 
-        <div className="absolute bottom-2.5 left-2.5">
+        <div className="absolute bottom-2.5 left-2.5 flex items-center">
           <button
             disabled={true}
             type="button"
@@ -55,6 +58,21 @@ export default function UserControl() {
           >
             <LightBulbIcon className={cn('size-4')} />
             <div>Reasoning</div>
+          </button>
+          <button
+            type="button"
+            className={cn(
+              'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
+              {
+                'text-blue-700 ': isSearchEnabled,
+              }
+            )}
+            onClick={() => {
+              setIsSearchEnabled(!isSearchEnabled)
+            }}
+          >
+            <GlobeAltIcon className={cn('size-4')} />
+            <div>Web Search</div>
           </button>
         </div>
 
@@ -102,6 +120,7 @@ export default function UserControl() {
               if (isGeneratingResponse) {
                 stop()
               } else {
+                setData(undefined)
                 append({
                   role: 'user',
                   content: input,

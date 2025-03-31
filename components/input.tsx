@@ -9,6 +9,7 @@ interface InputProps {
   selectedModelId: string
   isGeneratingResponse: boolean
   isReasoningEnabled: boolean
+  isSearchEnabled: boolean
 }
 
 export function Input({
@@ -17,12 +18,14 @@ export function Input({
   selectedModelId,
   isGeneratingResponse,
   isReasoningEnabled,
+  isSearchEnabled = false,
 }: InputProps) {
-  const { append } = useChat({
+  const { append, setData } = useChat({
     id: 'primary',
     body: {
       selectedModelId: selectedModelId,
       isReasoningEnabled: isReasoningEnabled,
+      isSearchEnabled: isSearchEnabled,
     },
     onError: () => {
       toast.error('An error occurred, please try again!')
@@ -51,6 +54,7 @@ export function Input({
             return
           }
 
+          setData(undefined)
           append({
             role: 'user',
             content: input,

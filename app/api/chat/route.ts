@@ -7,15 +7,33 @@ export async function POST(request: NextRequest) {
   const {
     messages,
     selectedModelId,
+    isSearchEnabled,
   }: {
     messages: Array<Message>
     selectedModelId: modelID
     isReasoningEnabled: boolean
+    isSearchEnabled: boolean
   } = await request.json()
 
   return createDataStreamResponse({
-    execute: (dataStream) => {
-      // dataStream.writeMessageAnnotation(ExampleFetch)
+    execute: async (dataStream) => {
+      if (isSearchEnabled) {
+        dataStream.writeData({
+          type: 'fetch',
+          status: 'pending',
+        })
+        // Simulate a delay for the example fetch
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            dataStream.writeMessageAnnotation(ExampleFetch)
+            dataStream.writeData({
+              type: 'fetch',
+              status: 'Searching: example.com',
+            })
+            resolve(true)
+          }, 2000)
+        })
+      }
       const result = streamText({
         system: 'you are a friendly assistant.',
         model: myProvider.languageModel(selectedModelId),
