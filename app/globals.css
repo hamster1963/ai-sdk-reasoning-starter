@@ -32,3 +32,7 @@ body {
 .scrollbar-hidden::-webkit-scrollbar {
   display: none; /* Chrome, Safari 和 Opera */
 }
+
+li p {
+  display: inline;
+}
