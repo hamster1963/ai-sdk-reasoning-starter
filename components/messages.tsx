@@ -232,13 +232,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
       ref={messagesRef}
     >
       {messages.map((message) => {
-        // Extract annotation results if they exist for this message
-        const annotationResults = message.annotations
-          ? message.annotations?.length > 0
-            ? (message.annotations[0] as Annotation).results
-            : undefined
-          : undefined
-
         return (
           <div
             key={`message-${message.id}`}
