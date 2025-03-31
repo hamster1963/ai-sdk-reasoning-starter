@@ -118,7 +118,7 @@ export const markdownComponents: Partial<Components> = {
 // Add a utility function to parse text and find citation references
 export function parseCitations(
   text: string,
-  onClick?: (citation: number) => void
+  onClick?: (citation: number, event?: React.MouseEvent) => void
 ) {
   // Regex to match citation references like [1], [2], etc.
   const citationRegex = /\[(\d+)\]/g
@@ -151,7 +151,7 @@ export function parseCitations(
         }}
         key={`citation-${match.index}`}
         className="cursor-pointer rounded bg-blue-50 px-1 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/40"
-        onClick={() => onClick?.(citationNumber)}
+        onClick={(e) => onClick?.(citationNumber, e)}
       >
         [{citationNumber}]
       </span>

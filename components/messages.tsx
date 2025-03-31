@@ -133,6 +133,7 @@ function CitationHandler({
   annotation: AnnotationResult[]
 }) {
   const [activeCitation, setActiveCitation] = useState<number | null>(null)
+  const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
   const ref = useRef<HTMLDivElement>(null)
 
   // Click outside handler to close the citation popup
@@ -149,12 +150,43 @@ function CitationHandler({
   }, [ref])
 
   // Handler for citation clicks
-  const handleCitationClick = (citationNumber: number) => {
+  const handleCitationClick = (
+    citationNumber: number,
+    event?: React.MouseEvent
+  ) => {
     if (activeCitation === citationNumber) {
       setActiveCitation(null)
-    } else {
-      setActiveCitation(citationNumber)
+      return
     }
+
+    // Calculate popup position from the click event
+    if (event) {
+      // Get viewport dimensions
+      const viewportWidth = window.innerWidth
+      const viewportHeight = window.innerHeight
+
+      // Set initial position at the mouse click
+      let x = event.clientX
+      let y = event.clientY + 20 // Add some offset below the mouse
+
+      // Ensure the popup doesn't go off screen (approximate popup width/height)
+      const popupWidth = 384 // max-w-md = 28rem = 448px, being conservative with 384px
+      const popupHeight = 200 // approximate height
+
+      // Adjust x position if it would go off the right edge
+      if (x + popupWidth > viewportWidth) {
+        x = Math.max(0, viewportWidth - popupWidth - 10)
+      }
+
+      // Adjust y position if it would go off the bottom edge
+      if (y + popupHeight > viewportHeight) {
+        y = Math.max(0, event.clientY - popupHeight - 10) // Show above the cursor
+      }
+
+      setPopupPosition({ x, y })
+    }
+
+    setActiveCitation(citationNumber)
   }
 
   const content = typeof children === 'string' ? children : ''
@@ -164,7 +196,14 @@ function CitationHandler({
     <div className="relative" ref={ref}>
       {hasCitationReferences ? (
         <div className="font-light text-sm leading-6">
-          {parseCitations(content, handleCitationClick)}
+          {parseCitations(content, (citationNumber) => {
+            // We need to capture the mouse event for positioning
+            const mouseEvent = window.event as MouseEvent
+            handleCitationClick(citationNumber, {
+              clientX: mouseEvent.clientX,
+              clientY: mouseEvent.clientY,
+            } as React.MouseEvent)
+          })}
         </div>
       ) : (
         <MemoizedReactMarkdown components={markdownComponents}>
@@ -173,7 +212,13 @@ function CitationHandler({
       )}
 
       {activeCitation !== null && annotation[activeCitation - 1] && (
-        <div className="absolute left-0 z-10 mt-1 max-w-md rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+        <div
+          className="fixed z-10 max-w-md rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+          style={{
+            top: `${popupPosition.y}px`,
+            left: `${popupPosition.x}px`,
+          }}
+        >
           <h4 className="mb-1 font-medium">
             {annotation[activeCitation - 1].title || `Source ${activeCitation}`}
           </h4>
