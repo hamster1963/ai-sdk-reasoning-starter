@@ -47,7 +47,7 @@ export default function UserControl() {
             disabled={true}
             type="button"
             className={cn(
-              'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:opacity-50',
+              'relative flex w-fit cursor-pointer flex-row items-center gap-2 rounded-full p-2 text-xs transition-colors disabled:cursor-not-allowed disabled:opacity-50',
               {
                 'text-green-700 ': isReasoningEnabled,
               }

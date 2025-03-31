@@ -134,26 +134,37 @@ function CitationHandler({
 }) {
   const [activeCitation, setActiveCitation] = useState<number | null>(null)
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 })
-  const ref = useRef<HTMLDivElement>(null)
+  const popupRef = useRef<HTMLDivElement>(null)
 
   // Click outside handler to close the citation popup
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
+      // Only close if popup is active and click is outside popup
+      if (
+        activeCitation !== null &&
+        popupRef.current &&
+        !popupRef.current.contains(event.target as Node)
+      ) {
         setActiveCitation(null)
       }
     }
+
     document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [ref])
+  }, [activeCitation])
 
   // Handler for citation clicks
   const handleCitationClick = (
     citationNumber: number,
     event?: React.MouseEvent
   ) => {
+    // Prevent event propagation to avoid immediate closing
+    if (event) {
+      event.stopPropagation()
+    }
+
     if (activeCitation === citationNumber) {
       setActiveCitation(null)
       return
@@ -186,23 +197,39 @@ function CitationHandler({
       setPopupPosition({ x, y })
     }
 
-    setActiveCitation(citationNumber)
+    // Use setTimeout to avoid immediate closing due to the same click event
+    setTimeout(() => {
+      setActiveCitation(citationNumber)
+    }, 0)
   }
 
   const content = typeof children === 'string' ? children : ''
   const hasCitationReferences = /\[\d+\]/.test(content)
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative">
       {hasCitationReferences ? (
         <div className="font-light text-sm leading-6">
           {parseCitations(content, (citationNumber) => {
-            // We need to capture the mouse event for positioning
-            const mouseEvent = window.event as MouseEvent
-            handleCitationClick(citationNumber, {
-              clientX: mouseEvent.clientX,
-              clientY: mouseEvent.clientY,
-            } as React.MouseEvent)
+            try {
+              // Create a synthetic event from the current mouse position
+              const rect = document.body.getBoundingClientRect()
+              const x = window.event
+                ? (window.event as MouseEvent).clientX
+                : rect.left
+              const y = window.event
+                ? (window.event as MouseEvent).clientY
+                : rect.top
+
+              handleCitationClick(citationNumber, {
+                clientX: x,
+                clientY: y,
+                stopPropagation: () => {},
+              } as React.MouseEvent)
+            } catch (error) {
+              console.error('Error handling citation click', error)
+              setActiveCitation(citationNumber)
+            }
           })}
         </div>
       ) : (
@@ -213,11 +240,18 @@ function CitationHandler({
 
       {activeCitation !== null && annotation[activeCitation - 1] && (
         <div
+          ref={popupRef}
           className="fixed z-10 max-w-md rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
           style={{
             top: `${popupPosition.y}px`,
             left: `${popupPosition.x}px`,
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') {
+              setActiveCitation(null)
+            }
+          }}
+          onClick={(e) => e.stopPropagation()} // Prevent clicks inside popup from closing it
         >
           <h4 className="mb-1 font-medium">
             {annotation[activeCitation - 1].title || `Source ${activeCitation}`}
