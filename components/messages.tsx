@@ -311,8 +311,6 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
     }
   }, [messagesLength])
 
-  console.log('Messages:', messages)
-
   return (
     <div
       className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
