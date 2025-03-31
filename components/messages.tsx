@@ -241,7 +241,7 @@ function CitationHandler({
       {activeCitation !== null && annotation[activeCitation - 1] && (
         <div
           ref={popupRef}
-          className="fixed z-10 max-w-md rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800"
+          className="fixed z-10 max-w-md rounded-[20px] border border-neutral-200 bg-white px-4 py-3 shadow-lg shadow-neutral-100 dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-none"
           style={{
             top: `${popupPosition.y}px`,
             left: `${popupPosition.x}px`,
@@ -256,7 +256,7 @@ function CitationHandler({
           <h4 className="mb-1 font-medium">
             {annotation[activeCitation - 1].title || `Source ${activeCitation}`}
           </h4>
-          <p className="mb-2 break-all text-gray-500 text-xs dark:text-gray-400">
+          <p className="mb-2 break-all text-neutral-500 text-xs dark:text-neutral-400">
             <a
               href={annotation[activeCitation - 1].url}
               target="_blank"
@@ -269,13 +269,6 @@ function CitationHandler({
           <p className="text-sm">
             {annotation[activeCitation - 1].content.substring(0, 200)}...
           </p>
-          <button
-            type="button"
-            className="mt-2 text-blue-600 text-xs hover:underline dark:text-blue-400"
-            onClick={() => setActiveCitation(null)}
-          >
-            Close
-          </button>
         </div>
       )}
     </div>
