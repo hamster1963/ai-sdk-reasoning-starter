@@ -478,7 +478,7 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
             text={fetchStatus}
             disabled={false}
             speed={2}
-            className="-mt-2 mb-12 w-full font-light text-sm"
+            className="-mt-4 mb-12 w-full font-light text-sm"
           />
         )}
       {status === 'submitted' && (
