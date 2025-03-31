@@ -5,10 +5,11 @@ import type { UIMessage } from 'ai'
 import cn from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type React from 'react'
 import Markdown from 'react-markdown'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { MemoizedReactMarkdown } from './markdown'
-import { markdownComponents } from './markdown-components'
+import { markdownComponents, parseCitations } from './markdown-components'
 import ShinyText from './shiny-text'
 
 interface ReasoningPart {
@@ -108,35 +109,107 @@ export function ReasoningMessagePart({
 
 interface TextMessagePartProps {
   text: string
-}
-
-export function TextMessagePart({ text }: TextMessagePartProps) {
-  return (
-    <MemoizedReactMarkdown components={markdownComponents}>
-      {text}
-    </MemoizedReactMarkdown>
-  )
-}
-
-interface MessagesProps {
-  messages: Array<UIMessage>
-  status: UseChatHelpers['status']
-  fetchStatus?: string
+  annotations?: AnnotationResult[]
 }
 
 type Annotation = {
-  content: string
+  type: string
   title: string
-  url: string
+  results: Array<AnnotationResult>
 }
 
-// Add a new AnnotationDisplay component to handle the expanded/collapsed state
+type AnnotationResult = {
+  title: string
+  url: string
+  content: string
+}
+
+// Enhanced citation handler with improved citation detection
+function CitationHandler({
+  children,
+  annotation,
+}: {
+  children: React.ReactNode
+  annotation: AnnotationResult[]
+}) {
+  const [activeCitation, setActiveCitation] = useState<number | null>(null)
+  const ref = useRef<HTMLDivElement>(null)
+
+  // Click outside handler to close the citation popup
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setActiveCitation(null)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [ref])
+
+  // Handler for citation clicks
+  const handleCitationClick = (citationNumber: number) => {
+    if (activeCitation === citationNumber) {
+      setActiveCitation(null)
+    } else {
+      setActiveCitation(citationNumber)
+    }
+  }
+
+  const content = typeof children === 'string' ? children : ''
+  const hasCitationReferences = /\[\d+\]/.test(content)
+
+  return (
+    <div className="relative" ref={ref}>
+      {hasCitationReferences ? (
+        <div className="font-light text-sm leading-6">
+          {parseCitations(content, handleCitationClick)}
+        </div>
+      ) : (
+        <MemoizedReactMarkdown components={markdownComponents}>
+          {content}
+        </MemoizedReactMarkdown>
+      )}
+
+      {activeCitation !== null && annotation[activeCitation - 1] && (
+        <div className="absolute left-0 z-10 mt-1 max-w-md rounded-md border border-gray-200 bg-white p-3 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+          <h4 className="mb-1 font-medium">
+            {annotation[activeCitation - 1].title || `Source ${activeCitation}`}
+          </h4>
+          <p className="mb-2 break-all text-gray-500 text-xs dark:text-gray-400">
+            <a
+              href={annotation[activeCitation - 1].url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:underline"
+            >
+              {annotation[activeCitation - 1].url}
+            </a>
+          </p>
+          <p className="text-sm">
+            {annotation[activeCitation - 1].content.substring(0, 200)}...
+          </p>
+          <button
+            type="button"
+            className="mt-2 text-blue-600 text-xs hover:underline dark:text-blue-400"
+            onClick={() => setActiveCitation(null)}
+          >
+            Close
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Add the missing AnnotationDisplay component
 function AnnotationDisplay({
   annotation,
   messageId,
   index,
 }: {
-  annotation: Annotation[]
+  annotation: AnnotationResult[]
   messageId: string
   index: number
 }) {
@@ -159,7 +232,8 @@ function AnnotationDisplay({
 
   return (
     <div className="flex flex-col">
-      <div
+      <button
+        type="button"
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             setIsExpanded(!isExpanded)
@@ -168,9 +242,10 @@ function AnnotationDisplay({
         key={`annotation-${messageId}-${index}`}
         className="flex w-fit cursor-pointer flex-col rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/70"
         onClick={() => setIsExpanded(!isExpanded)}
+        tabIndex={0}
       >
         {annotation.length} webpages{' '}
-      </div>
+      </button>
 
       <AnimatePresence initial={false}>
         {isExpanded && (
@@ -204,6 +279,25 @@ function AnnotationDisplay({
   )
 }
 
+// Update the TextMessagePart component to handle citations
+export function TextMessagePart({ text, annotations }: TextMessagePartProps) {
+  if (!annotations || annotations.length === 0) {
+    return (
+      <MemoizedReactMarkdown components={markdownComponents}>
+        {text}
+      </MemoizedReactMarkdown>
+    )
+  }
+
+  return <CitationHandler annotation={annotations}>{text}</CitationHandler>
+}
+
+interface MessagesProps {
+  messages: Array<UIMessage>
+  status: UseChatHelpers['status']
+  fetchStatus?: string
+}
+
 export function Messages({ messages, status, fetchStatus }: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
@@ -214,92 +308,107 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
     }
   }, [messagesLength])
 
+  console.log('Messages:', messages)
+
   return (
     <div
       className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
-      {messages.map((message) => (
-        <div
-          key={`message-${message.id}`}
-          className={cn(
-            'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
-          )}
-        >
-          <div
-            className={cn('flex flex-col gap-2', {
-              'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
-                message.role === 'user',
-              '': message.role === 'assistant',
-            })}
-          >
-            {message.annotations?.map((annotation, index) => {
-              const annotationList = annotation as Annotation[]
-              return (
-                <AnnotationDisplay
-                  key={`annotation-display-${message.id}-${index}`}
-                  annotation={annotationList}
-                  messageId={message.id}
-                  index={index}
-                />
-              )
-            })}
-            {message.role === 'assistant' &&
-              message.content === '' &&
-              fetchStatus !== 'pending' &&
-              !message.parts.filter((part) => part.type === 'reasoning') && (
-                <ShinyText
-                  text="Generating..."
-                  disabled={false}
-                  speed={2}
-                  className="w-full font-light text-sm"
-                />
-              )}
-            {message.parts.map((part, partIndex) => {
-              if (part.type === 'text' && message.role !== 'user') {
-                return (
-                  <TextMessagePart
-                    key={`${message.id}-${partIndex}`} // 确保唯一 key
-                    text={part.text}
-                  />
-                )
-              }
-              if (part.type === 'text' && message.role === 'user') {
-                return (
-                  <div
-                    key={`${message.id}-${partIndex}`}
-                    className="flex flex-col gap-4 font-light text-sm"
-                  >
-                    {part.text}
-                  </div>
-                )
-              }
-              if (part.type === 'reasoning') {
-                return (
-                  <ReasoningMessagePart
-                    key={`${message.id}-${partIndex}`}
-                    // @ts-expect-error export ReasoningUIPart
-                    part={part}
-                    isReasoning={
-                      status === 'streaming' &&
-                      partIndex === message.parts.length - 1
-                    }
-                  />
-                )
-              }
-            })}
-          </div>
-        </div>
-      ))}
+      {messages.map((message) => {
+        // Extract annotation results if they exist for this message
+        const annotationResults = message.annotations
+          ? message.annotations?.length > 0
+            ? (message.annotations[0] as Annotation).results
+            : undefined
+          : undefined
 
-      {fetchStatus === 'pending' && status !== 'submitted' && (
-        <ShinyText
-          text="Fetching..."
-          disabled={false}
-          speed={2}
-          className="-mt-2 mb-12 w-full font-light text-sm"
-        />
-      )}
+        return (
+          <div
+            key={`message-${message.id}`}
+            className={cn(
+              'flex w-full flex-col gap-4 first-of-type:mt-16 last-of-type:mb-12'
+            )}
+          >
+            <div
+              className={cn('flex flex-col gap-2', {
+                'ml-auto w-fit rounded-lg bg-neutral-100 px-2 py-1 dark:bg-neutral-700/50':
+                  message.role === 'user',
+                '': message.role === 'assistant',
+              })}
+            >
+              {message.annotations?.map((annotation, index) => {
+                const annotationList = annotation as Annotation
+                return (
+                  <AnnotationDisplay
+                    key={`annotation-display-${message.id}-${index}`}
+                    annotation={annotationList.results}
+                    messageId={message.id}
+                    index={index}
+                  />
+                )
+              })}
+              {message.role === 'assistant' &&
+                message.content === '' &&
+                fetchStatus !== 'pending' &&
+                !message.parts.filter((part) => part.type === 'reasoning') && (
+                  <ShinyText
+                    text="Generating..."
+                    disabled={false}
+                    speed={2}
+                    className="w-full font-light text-sm"
+                  />
+                )}
+              {message.parts.map((part, partIndex) => {
+                if (part.type === 'text' && message.role !== 'user') {
+                  return (
+                    <TextMessagePart
+                      key={`${message.id}-${partIndex}`}
+                      text={part.text}
+                      annotations={annotationResults}
+                    />
+                  )
+                }
+                if (part.type === 'text' && message.role === 'user') {
+                  return (
+                    <div
+                      key={`${message.id}-${partIndex}`}
+                      className="flex flex-col gap-4 font-light text-sm"
+                    >
+                      {part.text}
+                    </div>
+                  )
+                }
+                if (part.type === 'reasoning') {
+                  return (
+                    <ReasoningMessagePart
+                      key={`${message.id}-${partIndex}`}
+                      // @ts-expect-error export ReasoningUIPart
+                      part={part}
+                      isReasoning={
+                        status === 'streaming' &&
+                        partIndex === message.parts.length - 1
+                      }
+                    />
+                  )
+                }
+              })}
+            </div>
+          </div>
+        )
+      })}
+
+      {fetchStatus &&
+        fetchStatus !== 'Success' &&
+        status !== 'submitted' &&
+        status !== 'ready' && (
+          <ShinyText
+            text={fetchStatus}
+            disabled={false}
+            speed={2}
+            className="-mt-2 mb-12 w-full font-light text-sm"
+          />
+        )}
       {status === 'submitted' && (
         <ShinyText
           text="Connecting..."

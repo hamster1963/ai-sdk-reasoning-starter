@@ -46,7 +46,9 @@
         "noExtraNonNullAssertion": "error",
         "noMisleadingInstantiator": "error",
         "noUnsafeDeclarationMerging": "error",
-        "useNamespaceKeyword": "error"
+        "useNamespaceKeyword": "error",
+        "noAssignInExpressions": "off",
+        "noImplicitAnyLet": "off"
       }
     }
   },

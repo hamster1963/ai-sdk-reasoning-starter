@@ -114,3 +114,56 @@ export const markdownComponents: Partial<Components> = {
     )
   },
 }
+
+// Add a utility function to parse text and find citation references
+export function parseCitations(
+  text: string,
+  onClick?: (citation: number) => void
+) {
+  // Regex to match citation references like [1], [2], etc.
+  const citationRegex = /\[(\d+)\]/g
+
+  if (!citationRegex.test(text)) {
+    return text
+  }
+
+  // Reset regex
+  citationRegex.lastIndex = 0
+
+  let lastIndex = 0
+  const parts = []
+  let match
+
+  while ((match = citationRegex.exec(text)) !== null) {
+    // Add text before the citation
+    if (match.index > lastIndex) {
+      parts.push(text.substring(lastIndex, match.index))
+    }
+
+    // Add the citation as a clickable element
+    const citationNumber = Number.parseInt(match[1], 10)
+    parts.push(
+      <span
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            onClick?.(citationNumber)
+          }
+        }}
+        key={`citation-${match.index}`}
+        className="cursor-pointer rounded bg-blue-50 px-1 text-blue-600 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-800/40"
+        onClick={() => onClick?.(citationNumber)}
+      >
+        [{citationNumber}]
+      </span>
+    )
+
+    lastIndex = match.index + match[0].length
+  }
+
+  // Add any remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.substring(lastIndex))
+  }
+
+  return <>{parts}</>
+}

@@ -15,9 +15,9 @@ export default function UserMessages() {
     data && data.length > 0
       ? typeof data[data.length - 1] === 'object' &&
         data[data.length - 1] !== null
-        ? (data[data.length - 1] as { status?: string })?.status || 'unknown'
-        : 'unknown'
-      : 'unknown'
+        ? (data[data.length - 1] as { status?: string })?.status || undefined
+        : undefined
+      : undefined
 
   return (
     <>
