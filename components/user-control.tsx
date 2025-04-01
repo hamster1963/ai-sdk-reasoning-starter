@@ -23,7 +23,7 @@ export default function UserControl() {
   )
   const [isReasoningEnabled, setIsReasoningEnabled] = useQueryState<boolean>(
     IsReasoningEnabled,
-    parseAsBoolean.withDefault(true)
+    parseAsBoolean.withDefault(selectedModelId.includes('deepseek-r1'))
   )
   const [isSearchEnabled, setIsSearchEnabled] = useQueryState<boolean>(
     IsSearchEnabled,
