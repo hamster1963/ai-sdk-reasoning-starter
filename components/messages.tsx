@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
+import { AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { MemoizedReactMarkdown } from './markdown'
 import { markdownComponents } from './markdown-components'
@@ -195,6 +196,13 @@ function AnnotationDisplay({
     setActiveCitation(citationIndex)
   }
 
+  const _websiteIconList = annotation.map((item) => {
+    const url = new URL(item.url)
+    const hostname = url.hostname
+    const iconUrl = `https://favicon.im/${hostname}`
+    return iconUrl
+  })
+
   return (
     <div className="flex flex-col">
       <button
@@ -209,7 +217,7 @@ function AnnotationDisplay({
         onClick={() => setIsExpanded(!isExpanded)}
         tabIndex={0}
       >
-        {annotation.length} webpages{' '}
+        {annotation.length} webpages <AvatarGroup avatars={avatars} max={3} />
       </button>
 
       <AnimatePresence initial={false}>
