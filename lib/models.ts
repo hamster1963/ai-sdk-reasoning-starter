@@ -60,7 +60,7 @@ export const myProvider = customProvider({
 })
 
 export type modelID = Parameters<(typeof myProvider)['languageModel']>['0']
-export const DefaultModelID = 'deepseek-r1-7B'
+export const DefaultModelID = 'medical-70B'
 
 export const models: Record<modelID, string> = {
   'deepseek-r1': 'DeepSeek-R1',

@@ -1,5 +1,10 @@
 import { type modelID, myProvider } from '@/lib/models'
-import { type Message, createDataStreamResponse, streamText } from 'ai'
+import {
+  type Message,
+  createDataStreamResponse,
+  smoothStream,
+  streamText,
+} from 'ai'
 import type { NextRequest } from 'next/server'
 
 // New function to call Tavily API
@@ -105,6 +110,10 @@ Please respond in the same language as the user's question.`
         system: systemPrompt,
         model: myProvider.languageModel(selectedModelId),
         messages,
+        experimental_transform: smoothStream({
+          delayInMs: null, // optional: defaults to 10ms
+          chunking: 'word', // optional: defaults to 'word'
+        }),
       })
       result.mergeIntoDataStream(dataStream, {
         sendReasoning: true,
