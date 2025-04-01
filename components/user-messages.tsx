@@ -1,4 +1,4 @@
-import { ModelList, type modelID } from '@/lib/models'
+import { DefaultModelID, ModelList, type modelID } from '@/lib/models'
 import {
   IsReasoningEnabled,
   IsSearchEnabled,
@@ -12,7 +12,7 @@ import { Messages } from './messages'
 export default function UserMessages() {
   const [selectedModelId] = useQueryState<modelID>(
     SelectedModelId,
-    parseAsStringLiteral(ModelList).withDefault('medical-70B')
+    parseAsStringLiteral(ModelList).withDefault(DefaultModelID)
   )
   const [isReasoningEnabled] = useQueryState<boolean>(
     IsReasoningEnabled,
