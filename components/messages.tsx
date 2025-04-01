@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 import Markdown from 'react-markdown'
-import { AvatarGroup } from './avatar-group'
+import { type AvatarData, AvatarGroup } from './avatar-group'
 import { ChevronDownIcon, ChevronUpIcon } from './icons'
 import { MemoizedReactMarkdown } from './markdown'
 import { markdownComponents } from './markdown-components'
@@ -196,11 +196,14 @@ function AnnotationDisplay({
     setActiveCitation(citationIndex)
   }
 
-  const _websiteIconList = annotation.map((item) => {
+  const websiteIconList = annotation.map((item) => {
     const url = new URL(item.url)
     const hostname = url.hostname
     const iconUrl = `https://favicon.im/${hostname}`
-    return iconUrl
+    return {
+      src: iconUrl,
+      name: hostname,
+    } as AvatarData
   })
 
   return (
@@ -213,11 +216,17 @@ function AnnotationDisplay({
           }
         }}
         key={`annotation-${messageId}-${index}`}
-        className="flex w-fit cursor-pointer flex-col rounded-full border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/70"
+        className="flex w-fit cursor-pointer flex-row items-center justify-between gap-1 rounded-full border border-neutral-200 bg-neutral-50 py-1 pr-1 pl-2 text-xs transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/50 dark:hover:bg-neutral-700/70"
         onClick={() => setIsExpanded(!isExpanded)}
         tabIndex={0}
       >
-        {annotation.length} webpages <AvatarGroup avatars={avatars} max={3} />
+        {annotation.length} webpages
+        <AvatarGroup
+          avatars={websiteIconList}
+          overlap={'sm'}
+          size={'xs'}
+          max={5}
+        />
       </button>
 
       <AnimatePresence initial={false}>

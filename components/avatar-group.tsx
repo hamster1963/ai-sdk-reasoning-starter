@@ -10,7 +10,7 @@ export interface AvatarData {
 interface AvatarGroupProps {
   avatars: AvatarData[]
   max?: number
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'xs'
   overlap?: 'sm' | 'md' | 'lg'
   className?: string
 }
@@ -27,6 +27,7 @@ export function AvatarGroup({
 
   // Size classes
   const sizeClasses = {
+    xs: 'h-4 w-4',
     sm: 'h-8 w-8',
     md: 'h-10 w-10',
     lg: 'h-12 w-12',
@@ -44,12 +45,13 @@ export function AvatarGroup({
       <div className="flex">
         {visibleAvatars.map((avatar, index) => (
           <Avatar
-            key={`${index}-${avatar.name}`}
+            key={`${index}_${avatar.name}`}
             className={cn(
-              'border-2 border-background',
+              'relative border-[2px] border-background',
               sizeClasses[size],
               index > 0 && overlapClasses[overlap]
             )}
+            style={{ zIndex: visibleAvatars.length - index }}
           >
             <AvatarImage src={avatar.src} alt={avatar.name} />
             <AvatarFallback>
@@ -62,8 +64,10 @@ export function AvatarGroup({
             className={cn(
               'flex items-center justify-center rounded-full border-2 border-background bg-muted text-muted-foreground',
               sizeClasses[size],
-              overlapClasses[overlap]
+              overlapClasses[overlap],
+              'relative'
             )}
+            style={{ zIndex: 0 }}
           >
             <span className="font-medium text-xs">+{remainingCount}</span>
           </div>
