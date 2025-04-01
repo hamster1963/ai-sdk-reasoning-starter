@@ -428,33 +428,35 @@ export function Messages({
                 }
               })}
             </div>
-            {message.role === 'assistant' && status === 'ready' && (
-              <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigator.clipboard.writeText(message.content)
-                  }}
-                  title="Copy to clipboard"
-                >
-                  <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    // 删除messages这个索引后的消息
-                    const newMessages = messages.slice(0, messageIndex + 1)
-                    setMessagesAndReload(newMessages)
-                  }}
-                  className={cn(
-                    'rounded-md text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
-                  )}
-                  title="Regenerate response"
-                >
-                  <ArrowPathIcon className="size-4" />
-                </button>
-              </div>
-            )}
+            {message.role === 'assistant' &&
+              (messageIndex !==
+                messages.findLastIndex((msg) => msg.role === 'assistant') ||
+                status !== 'streaming') && (
+                <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(message.content)
+                    }}
+                    title="Copy to clipboard"
+                  >
+                    <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+                  </button>
+                  <button
+                    disabled={status === 'streaming'}
+                    className={'disabled:cursor-not-allowed'}
+                    type="button"
+                    onClick={() => {
+                      // 删除messages这个索引后的消息
+                      const newMessages = messages.slice(0, messageIndex + 1)
+                      setMessagesAndReload(newMessages)
+                    }}
+                    title="Regenerate response"
+                  >
+                    <ArrowPathIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+                  </button>
+                </div>
+              )}
           </div>
         )
       })}
