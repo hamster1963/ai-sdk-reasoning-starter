@@ -1,25 +1,35 @@
 'use client'
 
+import { ModelList, type modelID } from '@/lib/models'
+import {
+  IsReasoningEnabled,
+  IsSearchEnabled,
+  SelectedModelId,
+} from '@/lib/nusq'
 import { useChat } from '@ai-sdk/react'
+import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { toast } from 'sonner'
 
 interface InputProps {
   input: string
   setInput: (value: string) => void
-  selectedModelId: string
   isGeneratingResponse: boolean
-  isReasoningEnabled: boolean
-  isSearchEnabled: boolean
 }
 
-export function Input({
-  input,
-  setInput,
-  selectedModelId,
-  isGeneratingResponse,
-  isReasoningEnabled,
-  isSearchEnabled = false,
-}: InputProps) {
+export function Input({ input, setInput, isGeneratingResponse }: InputProps) {
+  const [selectedModelId] = useQueryState<modelID>(
+    SelectedModelId,
+    parseAsStringLiteral(ModelList).withDefault('medical-70B')
+  )
+  const [isReasoningEnabled] = useQueryState<boolean>(
+    IsReasoningEnabled,
+    parseAsBoolean.withDefault(true)
+  )
+  const [isSearchEnabled] = useQueryState<boolean>(
+    IsSearchEnabled,
+    parseAsBoolean.withDefault(false)
+  )
+
   const { append, setData } = useChat({
     id: 'primary',
     body: {

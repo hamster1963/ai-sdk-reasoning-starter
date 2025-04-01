@@ -1,6 +1,7 @@
 'use client'
 
 import type { UseChatHelpers } from '@ai-sdk/react'
+import { ArrowPathIcon, ClipboardIcon } from '@heroicons/react/24/outline'
 import type { UIMessage } from 'ai'
 import cn from 'classnames'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -99,8 +100,6 @@ export function ReasoningMessagePart({
                 '<redacted>'
               )
             )}
-
-            {/* <Markdown components={markdownComponents}>{reasoning}</Markdown> */}
           </motion.div>
         )}
       </AnimatePresence>
@@ -318,9 +317,17 @@ interface MessagesProps {
   messages: Array<UIMessage>
   status: UseChatHelpers['status']
   fetchStatus?: string
+  reload?: () => void
+  setMessages?: (messages: Array<UIMessage>) => void
 }
 
-export function Messages({ messages, status, fetchStatus }: MessagesProps) {
+export function Messages({
+  messages,
+  status,
+  fetchStatus,
+  reload,
+  setMessages,
+}: MessagesProps) {
   const messagesRef = useRef<HTMLDivElement>(null)
   const messagesLength = useMemo(() => messages.length, [messages])
 
@@ -330,12 +337,21 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
     }
   }, [messagesLength])
 
+  const setMessagesAndReload = (messages: Array<UIMessage>) => {
+    if (setMessages) {
+      setMessages(messages)
+    }
+    if (reload) {
+      reload()
+    }
+  }
+
   return (
     <div
       className="scrollbar-hidden flex w-full flex-col items-center gap-4 overflow-y-scroll"
       ref={messagesRef}
     >
-      {messages.map((message) => {
+      {messages.map((message, messageIndex) => {
         return (
           <div
             key={`message-${message.id}`}
@@ -412,6 +428,33 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
                 }
               })}
             </div>
+            {message.role === 'assistant' && status === 'ready' && (
+              <div className="-mt-3 -ml-0.5 flex justify-start gap-2 transition-opacity">
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(message.content)
+                  }}
+                  title="Copy to clipboard"
+                >
+                  <ClipboardIcon className="size-4 text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    // 删除messages这个索引后的消息
+                    const newMessages = messages.slice(0, messageIndex + 1)
+                    setMessagesAndReload(newMessages)
+                  }}
+                  className={cn(
+                    'rounded-md text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300'
+                  )}
+                  title="Regenerate response"
+                >
+                  <ArrowPathIcon className="size-4" />
+                </button>
+              </div>
+            )}
           </div>
         )
       })}

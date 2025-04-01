@@ -1,20 +1,34 @@
-import { DefaultModelID, type modelID, models } from '@/lib/models'
+import { ModelList, type modelID, models } from '@/lib/models'
 import { useChat } from '@ai-sdk/react'
 import { GlobeAltIcon, LightBulbIcon } from '@heroicons/react/24/outline'
 import cn from 'classnames'
+import { parseAsBoolean, parseAsStringLiteral, useQueryState } from 'nuqs'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { Input } from './input'
 
+import {
+  IsReasoningEnabled,
+  IsSearchEnabled,
+  SelectedModelId,
+} from '@/lib/nusq'
 import { Footnote } from './footnote'
 import { ArrowUpIcon, ChevronDownIcon, StopIcon } from './icons'
 
 export default function UserControl() {
   const [input, setInput] = useState<string>('')
-  const [selectedModelId, setSelectedModelId] =
-    useState<modelID>(DefaultModelID)
-  const [isReasoningEnabled, setIsReasoningEnabled] = useState<boolean>(true)
-  const [isSearchEnabled, setIsSearchEnabled] = useState<boolean>(false)
+  const [selectedModelId, setSelectedModelId] = useQueryState<modelID>(
+    SelectedModelId,
+    parseAsStringLiteral(ModelList).withDefault('medical-70B')
+  )
+  const [isReasoningEnabled, setIsReasoningEnabled] = useQueryState<boolean>(
+    IsReasoningEnabled,
+    parseAsBoolean.withDefault(true)
+  )
+  const [isSearchEnabled, setIsSearchEnabled] = useQueryState<boolean>(
+    IsSearchEnabled,
+    parseAsBoolean.withDefault(false)
+  )
 
   const { append, status, stop, setData } = useChat({
     id: 'primary',
@@ -36,10 +50,7 @@ export default function UserControl() {
         <Input
           input={input}
           setInput={setInput}
-          selectedModelId={selectedModelId}
           isGeneratingResponse={isGeneratingResponse}
-          isReasoningEnabled={isReasoningEnabled}
-          isSearchEnabled={isSearchEnabled}
         />
 
         <div className="absolute bottom-2.5 left-2.5 flex flex-col sm:flex-row sm:items-center">
