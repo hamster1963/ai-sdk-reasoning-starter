@@ -32,7 +32,7 @@ export const markdownComponents: Partial<Components> = {
         <code className={`language-${match[1]} text-sm`}>{children}</code>
       </pre>
     ) : (
-      <code className="rounded-md bg-gray-200 px-1 py-0.5 dark:bg-gray-800">
+      <code className="mx-[1px] rounded-md bg-neutral-200 px-1 text-[12px] dark:bg-neutral-800">
         {children}
       </code>
     )
