@@ -145,12 +145,14 @@ function AnnotationDisplay({
       opacity: 0,
       marginTop: 0,
       marginBottom: 0,
+      filter: 'blur(5px)',
     },
     expanded: {
       height: 'auto',
       opacity: 1,
       marginTop: '0.5rem',
       marginBottom: '0.5rem',
+      filter: 'blur(0px)',
     },
   }
 
