@@ -47,7 +47,7 @@ export function AvatarGroup({
           <Avatar
             key={`${index}_${avatar.name}`}
             className={cn(
-              'relative border-[2px] border-background',
+              'relative border-[1px] border-neutral-100 bg-white dark:border-neutral-800 dark:bg-black',
               sizeClasses[size],
               index > 0 && overlapClasses[overlap]
             )}
@@ -62,7 +62,7 @@ export function AvatarGroup({
         {remainingCount > 0 && (
           <div
             className={cn(
-              'flex items-center justify-center rounded-full border-2 border-background bg-muted text-muted-foreground',
+              'flex items-center justify-center rounded-full border-2 border-neutral-100 bg-muted text-muted-foreground dark:border-neutral-800',
               sizeClasses[size],
               overlapClasses[overlap],
               'relative'
