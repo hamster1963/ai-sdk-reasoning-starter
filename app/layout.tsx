@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Reasoning Preview',
+  title: 'Hamster"s AI SDK',
   description:
     'This is a preview of using reasoning models with Next.js and the AI SDK.',
 }
