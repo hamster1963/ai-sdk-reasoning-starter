@@ -374,10 +374,17 @@ export function Messages({ messages, status, fetchStatus }: MessagesProps) {
               {message.parts.map((part, partIndex) => {
                 if (part.type === 'text' && message.role !== 'user') {
                   return (
+                      <motion.div
+                          key={`${message.id}-${partIndex}`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.2 }}
+                      >
                     <TextMessagePart
                       key={`${message.id}-${partIndex}`}
                       text={part.text}
                     />
+                      </motion.div>
                   )
                 }
                 if (part.type === 'text' && message.role === 'user') {
